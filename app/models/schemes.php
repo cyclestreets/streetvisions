@@ -12,6 +12,31 @@ class schemesModel
 	}
 	
 	
+	# Database definition
+	private function databaseStructure ()
+	{
+		return $sql = "
+			CREATE TABLE `schemes` (
+			  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Automatic key',
+			  `moniker` varchar(50) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Moniker',
+			  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Scheme name',
+			  `description` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description',
+			  `boundary` geometry NOT NULL COMMENT 'Boundary',
+			  `link` text COLLATE utf8mb4_unicode_ci COMMENT 'Link giving more info',
+			  `photo` int(11) DEFAULT NULL COMMENT 'Photo ID',
+			  `private` tinyint(1) DEFAULT NULL COMMENT 'Private?',
+			  `deleted` tinyint(1) DEFAULT NULL COMMENT 'Deleted?',
+			  `person` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Creator name',
+			  `username` varchar(30) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'CycleStreets username',
+			  `createdAt` datetime NOT NULL COMMENT 'Created at',
+			  `updatedAt` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Updated at',
+			  PRIMARY KEY (`id`),
+			  SPATIAL KEY `boundary` (`boundary`)
+			) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='Table of schemes';
+		";
+	}
+	
+	
 	
 	# Get scheme
 	public function getScheme ($moniker)
