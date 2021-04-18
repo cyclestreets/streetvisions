@@ -1,0 +1,89 @@
+
+	<link rel="stylesheet" type="text/css" href="{$baseUrl}/css/streetvisions.css" />
+	<script src="{$baseUrl}/js/streetvisions.js"></script>
+	<script>
+		$(function () {
+			streetvisions.initialise();
+		});
+	</script>
+	
+	
+	<section class="visions">
+		<section class="sidebar">
+			<i class="back-arrow fa fa-chevron-circle-left"></i>
+			<h1>Creative scheme title here with 2 lines</h1>
+			<h2>Simon Nuttall</h2>
+			<hr>
+			<h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
+				dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
+				ex ea commodo consequat. </h3>
+			<h4>Map</h4>
+			<hr class="section">
+			<img class="map" src="/images/placeholders/map_placeholder.png" />
+			<h4>Photo gallery</h4>
+			<hr class="section">
+			<h4>Useful links</h4>
+			<hr class="section">
+			<ul class="links">
+				<li><a href="#">Link here</a></li>
+				<li><a href="#">Second link here</a></li>
+				<li><a href="#">A third link</a></li>
+			</ul>
+		</section>
+
+		<section class="content">
+			<h1>Visions</h1>
+
+			<div class="segmented-control-container">
+				<div class="ios-segmented-control">
+					<span class="selection"></span>
+					<div class="option">
+						<input type="radio" id="popular" name="current-view" value="popular">
+						<label for="popular"><span>Popular</span></label>
+					</div>
+					<div class="option">
+						<input type="radio" id="all" name="current-view" value="all">
+						<label for="all"><span>All</span></label>
+					</div>
+					<div class="option">
+						<input type="radio" id="latest" name="current-view" value="latest">
+						<label for="latest"><span>Latest</span></label>
+					</div>
+				</div>
+			</div>
+
+			<i class="add-vision fa fa-plus-circle"></i>
+
+			<hr>
+
+			<h3>View, edit, and create new community visions here.</h3>
+
+			<div class="library_card">
+				<div class="card-image">
+					<img src="/images/placeholders/vision_map_placeholder.png" />
+				</div>
+				<div class="content">
+					<div class="likes">
+						<i class="fa fa-heart"></i><p>88</p>
+					</div>
+					<h4>Title of vision</h4>
+					<h5>Martin Lucas-Smith</h5>
+					<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+				</div>
+				<div class="read-more">
+					<div class="comment-count">
+						<i class="fa fa-comments"></i><p>21</p>
+					</div>
+					<div class="share">
+						<i class="fa fa-share-square"></i><p>4</p>
+					</div>
+					<div class="details">
+						<a href="#">View details <i class="fa fa-chevron-right"></i></a>
+					</div>
+				</div>
+			</div>
+
+		</section>
+		
+	</section>
+	
