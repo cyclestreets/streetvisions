@@ -169,6 +169,11 @@ class streetvisions
 	# List schemes
 	public function schemeslist ()
 	{
+		# Get the schemes
+		$schemes = $this->schemesModel->getSchemes ();
+		
+		# Send the schemes to the template
+		$this->template['schemes'] = $schemes;
 	}
 	
 	

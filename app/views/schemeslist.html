@@ -2,6 +2,18 @@
 	<section class="visions">
 		<section class="sidebar">
 			
+			<h2>Current schemes</h2>
+			{if ($schemes)}
+				<ul>
+				{foreach from=$schemes item=scheme}
+					<li><a href="{$baseUrl}/{$scheme.moniker}/">{$scheme.name|htmlspecialchars}</a></li>
+				{/foreach}
+				</ul>
+			{else}
+				<p>There are no current schemes. You can add one below.</p>
+			{/if}
+			
+			<h2>Add scheme</h2>
 			<p><a href="{$baseUrl}/add.html">Add scheme</a></p>
 			
 		</section>

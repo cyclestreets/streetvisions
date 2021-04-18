@@ -42,8 +42,42 @@ class schemesModel
 	public function getScheme ($moniker)
 	{
 		# Get the scheme from the database
-		if (!$scheme = $this->databaseConnection->selectOne ($this->settings['database'], 'schemes', array ('moniker' => $moniker), '*, ST_AsGeoJSON(boundary) AS boundary')) {return false;}
+		if (!$scheme = $this->databaseConnection->selectOne ($this->settings['database'], 'schemes', array ('moniker' => $moniker), '*, ST_AsGeoJSON(boundary) AS boundary')) {return array ();}
 		
+		# Format the data
+		$scheme = $this->decorateScheme ($scheme);
+		
+		# Return the scheme
+		return $scheme;
+	}
+	
+	
+	# Get schemes, indexed by moniker
+	public function getSchemes ()
+	{
+		# Get the schemes from the database
+		if (!$schemesById = $this->databaseConnection->select ($this->settings['database'], 'schemes', array (), '*, ST_AsGeoJSON(boundary) AS boundary')) {return array ();}
+		
+		# Reindex by moniker
+		$schemes = array ();
+		foreach ($schemesById as $scheme) {
+			$moniker = $scheme['moniker'];
+			$schemes[$moniker] = $scheme;
+		}
+		
+		# Format the data
+		foreach ($schemes as $moniker => $scheme) {
+			$schemes[$moniker] = $this->decorateScheme ($scheme);
+		}
+		
+		# Return the schemes
+		return $schemes;
+	}
+	
+	
+	# Scheme data decorator
+	private function decorateScheme ($scheme)
+	{
 		# Remove internal fields
 		unset ($scheme['id']);
 		unset ($scheme['private']);
