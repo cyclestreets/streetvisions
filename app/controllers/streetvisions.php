@@ -20,6 +20,7 @@ class streetvisions
 			'defaultLongitude'	=> NULL,
 			'defaultZoom'		=> NULL,
 			'tileUrl'	=> 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+			'geojsonData'	=> false,	// Set by the action
 		);
 	}
 	
@@ -118,7 +119,7 @@ class streetvisions
 		$this->template['applicationPath'] = $applicationPath;
 		
 		# Set the application JS settings
-		$jsSettingsFields = array ('defaultLatitude', 'defaultLongitude', 'defaultZoom', 'tileUrl');
+		$jsSettingsFields = array ('defaultLatitude', 'defaultLongitude', 'defaultZoom', 'tileUrl', 'geojsonData');
 		$jsSettings = application::arrayFields ($this->settings, $jsSettingsFields);
 		$this->template['settingsJs'] = json_encode ($jsSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		

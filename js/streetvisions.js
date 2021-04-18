@@ -11,7 +11,10 @@ var streetvisions = (function ($) {
 		defaultZoom: false,
 		
 		// Tiles
-		tileUrl: false
+		tileUrl: false,
+		
+		// Data
+		geojsonData: {}
 	};
 	
 	// Properties
