@@ -14,6 +14,8 @@ class streetvisions
 			'database'	=> 'streetvisions',
 			'username'	=> 'streetvisions',
 			'password'	=> NULL,
+			'cyclestreetsApiBaseUrl'	=> 'https://api.cyclestreets.net',
+			'cyclestreetsApiKey'		=> NULL,
 		);
 	}
 	
@@ -71,6 +73,7 @@ class streetvisions
 		# Load libraries
 		require_once ('application.php');
 		require_once ('database.php');
+		require_once ('ultimateForm.php');
 		
 		# Obtain settings, merged over the defaults
 		if (!$this->settings = application::assignArguments ($errors, $settings, $this->defaults (), get_class ($this), NULL, $handleErrors = true)) {return false;}
@@ -154,6 +157,110 @@ class streetvisions
 	# Add scheme
 	public function schemeadd ()
 	{
+		# Create a form to add
+		$form = new form (array (
+			'databaseConnection' => $this->databaseConnection,
+			'displayRestrictions' => true,
+			'unsavedDataProtection' => true,
+		));
+		$form->dataBinding (array (
+			'database'		=> $this->settings['database'],
+			'table'			=> 'schemes',
+			'intelligence'	=> true,
+			'exclude'		=> array ('boundary', 'components', 'photo', 'private', 'deleted', 'username', 'person'),
+			'attributes'	=> array (
+				'moniker'	=> array ('regexp' => '^([-a-z0-9]+)$', ),
+			),
+		));
+		$form->textarea (array (
+			'name'			=> 'boundary',
+			'title'			=> 'Scheme boundary (GeoJSON)',
+			'required'		=> true,
+		));
+		$form->input (array (
+			'name'			=> 'username',
+			'title'			=> 'CycleStreets username/e-mail',
+			'required'		=> true,
+		));
+		$form->password (array (
+			'name'			=> 'password',
+			'title'			=> 'CycleStreets password',
+			'required'		=> true,
+		));
+		$formHtml = '';
+		if ($unfinalisedData = $form->getUnfinalisedData ()) {
+			
+			# Ensure the moniker does not already exist
+			if (strlen ($unfinalisedData['moniker'])) {
+				if ($this->databaseConnection->selectOne ($this->settings['database'], 'schemes', array ('moniker' => $unfinalisedData['moniker']))) {
+					$form->registerProblem ('monikertaken', "Sorry, there is <a href=\"{$this->baseUrl}/{$unfinalisedData['moniker']}/\" target=\"_blank\" title=\"[Link opens in a new window]\">already a scheme</a> with that URL moniker.", 'moniker');
+				}
+			}
+			
+			# Validate username and password against the CycleStreets API
+			if (strlen ($unfinalisedData['username']) && strlen ($unfinalisedData['password'])) {
+				if (!$user = $this->validateUser ($unfinalisedData['username'], $unfinalisedData['password'], $userError)) {
+					$form->registerProblem ('userinvalid', $userError, array ('username', 'password'));
+				}
+			}
+		}
+		$scheme = $form->process ($formHtml);
+		$this->template['form'] = $formHtml;
+		
+		# If the form is successful, assemble the data
+		if ($scheme) {
+			
+			# Handle geometries
+			$functionValues = array ('boundary' => $scheme['boundary']);
+			$scheme['boundary'] = "ST_GeomFromGeoJSON(:boundary)";
+			
+			# Handle user details
+			$scheme['username'] = $user['username'];
+			$scheme['person'] = $user['name'];
+			unset ($scheme['password']);
+			
+			# Other fields
+			$scheme['createdAt'] = 'NOW()';
+			
+			# Insert the data
+			if (!$result = $this->databaseConnection->insert ($this->settings['database'], 'schemes', $scheme, false, true, false, false, 'INSERT', $functionValues)) {
+				#!# Need to report error to the UI properly
+				application::dumpData ($this->databaseConnection->error ());
+				return false;
+			}
+			
+			# Redirect the user to the new scheme page
+			#!# Needs result flash
+			$redirectTo = $this->baseUrl . '/' . $scheme['moniker'] . '/';
+			#!# HTML needs to be written to
+			$html = application::sendHeader (302, $redirectTo);
+		}
+		
+	}
+	
+	
+	# Helper function to validate a user
+	private function validateUser ($identifier, $password, &$error = false)
+	{
+		# Assemble the data
+		$url = $this->settings['cyclestreetsApiBaseUrl'] . '/v2/user.authenticate' . '?key=' . $this->settings['cyclestreetsApiKey'];
+		$postData = array (
+			'identifier'	=> $identifier,
+			'password'		=> $password,
+		);
+		
+		# Validate the user; see: https://www.cyclestreets.net/api/v2/user.authenticate/
+		$result = application::file_post_contents ($url, $postData);
+		$user = json_decode ($result, true);
+		
+		# If an error is returned, allocate it for the UI
+		if (isSet ($user['error'])) {
+			$error = $user['error'];
+			return false;
+		}
+		
+		# Otherwise return the user data
+		return $user;
 	}
 	
 	
