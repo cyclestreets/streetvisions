@@ -11,24 +11,27 @@
 	<section class="visions">
 		<section class="sidebar">
 			<i class="back-arrow fa fa-chevron-circle-left"></i>
-			<h1>Creative scheme title here with 2 lines</h1>
-			<h2>Simon Nuttall</h2>
+			<h1>{$scheme.name|htmlspecialchars}</h1>
+			<h2>{$scheme.person|htmlspecialchars}</h2>
 			<hr>
-			<h3>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et
-				dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip
-				ex ea commodo consequat. </h3>
+			<h3>{$scheme.description|htmlspecialchars}</h3>
 			<h4>Map</h4>
 			<hr class="section">
-			<img class="map" src="/images/placeholders/map_placeholder.png" />
-			<h4>Photo gallery</h4>
+			{$scheme.boundary}
+			<h4>Photo</h4>
+			{if ($scheme.photo)}
+				<img src="{$scheme.photo}" />
+			{else}
+				<p>Sorry, there isn't a photo of this location yet.</p>
+			{/if}
 			<hr class="section">
-			<h4>Useful links</h4>
+			{if ($scheme.link)}
+			<h4>Read more</h4>
 			<hr class="section">
 			<ul class="links">
-				<li><a href="#">Link here</a></li>
-				<li><a href="#">Second link here</a></li>
-				<li><a href="#">A third link</a></li>
+				<li><a href="{$scheme.link}" target="_blank" title="[Link opens in a new window]">Read more</a></li>
 			</ul>
+			{/if}
 		</section>
 
 		<section class="content">

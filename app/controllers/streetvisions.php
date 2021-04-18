@@ -243,6 +243,17 @@ class streetvisions
 	# Show scheme
 	public function schemeshow ()
 	{
+		# Obtain the moniker
+		#!# Needs error handling
+		$moniker = $_GET['scheme'];
+		
+		# Get the scheme
+		if (!$scheme = $this->schemesModel->getScheme ($moniker)) {
+			#!# Error handling needed
+		}
+		
+		# Populate the template
+		$this->template['scheme'] = $scheme;
 	}
 	
 	
