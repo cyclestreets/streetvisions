@@ -6,13 +6,16 @@ var streetvisions = (function ($) {
 	var _settings = {
 	};
 	
+	// Properties
+	var _action;
+	
 		
 	return {
 		
 	// Public functions
 		
 		// Main function
-		initialise: function (config)
+		initialise: function (action, config)
 		{
 			// Merge the configuration into the settings
 			$.each (_settings, function (setting, value) {
@@ -22,6 +25,13 @@ var streetvisions = (function ($) {
 			});
 			
 			streetvisions.initUi ();
+			
+			// Run action, if defined and existing
+			if (action) {
+				if (typeof streetvisions[action] == 'function') {
+					streetvisions[action] ();
+				}
+			}
 		},
 		
 		
