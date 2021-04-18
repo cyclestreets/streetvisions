@@ -16,6 +16,10 @@ class streetvisions
 			'password'	=> NULL,
 			'cyclestreetsApiBaseUrl'	=> 'https://api.cyclestreets.net',
 			'cyclestreetsApiKey'		=> NULL,
+			'defaultLatitude'	=> NULL,
+			'defaultLongitude'	=> NULL,
+			'defaultZoom'		=> NULL,
+			'tileUrl'	=> 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
 		);
 	}
 	
@@ -114,7 +118,7 @@ class streetvisions
 		$this->template['applicationPath'] = $applicationPath;
 		
 		# Set the application JS settings
-		$jsSettingsFields = array ();
+		$jsSettingsFields = array ('defaultLatitude', 'defaultLongitude', 'defaultZoom', 'tileUrl');
 		$jsSettings = application::arrayFields ($this->settings, $jsSettingsFields);
 		$this->template['settingsJs'] = json_encode ($jsSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		

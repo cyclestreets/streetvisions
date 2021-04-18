@@ -4,6 +4,14 @@ var streetvisions = (function ($) {
 	
 	// Settings defaults
 	var _settings = {
+		
+		// Initial map location
+		defaultLatitude: false,
+		defaultLongitude: false,
+		defaultZoom: false,
+		
+		// Tiles
+		tileUrl: false
 	};
 	
 	// Properties
@@ -49,6 +57,25 @@ var streetvisions = (function ($) {
 
 			// Discussion
 			streetvisions.initDiscussion ();
+		},
+		
+		
+		// Leaflet map
+		leafletMap: function (geojsonData)
+		{
+			// Create a map
+			var map = L.map ('map').setView ([_settings.defaultLatitude, _settings.defaultLongitude], _settings.defaultZoom);
+			
+			// Add tile background
+			L.tileLayer (_settings.tileUrl, {
+				attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+			}).addTo (map);
+			
+			// Add the GeoJSON to the map
+			if (geojsonData) {
+				var feature = L.geoJSON (geojsonData).addTo (map);
+				map.fitBounds(feature.getBounds());
+			}
 		},
 
 		
