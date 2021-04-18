@@ -2,13 +2,25 @@ var streetvisions = (function ($) {
 	
 	'use strict';
 	
+	// Settings defaults
+	var _settings = {
+	};
+	
+		
 	return {
 		
 	// Public functions
 		
 		// Main function
-		initialise: function ()
+		initialise: function (config)
 		{
+			// Merge the configuration into the settings
+			$.each (_settings, function (setting, value) {
+				if (config.hasOwnProperty(setting)) {
+					_settings[setting] = config[setting];
+				}
+			});
+			
 			streetvisions.initUi ();
 		},
 		

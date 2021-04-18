@@ -113,6 +113,11 @@ class streetvisions
 		$this->template['baseUrl'] = $this->baseUrl;
 		$this->template['applicationPath'] = $applicationPath;
 		
+		# Set the application JS settings
+		$jsSettingsFields = array ();
+		$jsSettings = application::arrayFields ($this->settings, $jsSettingsFields);
+		$this->template['settingsJs'] = json_encode ($jsSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+		
 		# Compile the HTML from the template, which the boostrap file will then echo
 		foreach ($this->template as $placeholder => $fragmentHtml) {
 			$this->templateHandle->assign ($placeholder, $fragmentHtml);
