@@ -22,6 +22,27 @@ class schemesModel
 		# Return the scheme
 		return $scheme;
 	}
+	
+	
+	# Add scheme
+	public function addScheme ($scheme, &$error = false)
+	{
+		# Handle geometries
+		$functionValues = array ('boundary' => $scheme['boundary']);
+		$scheme['boundary'] = "ST_GeomFromGeoJSON(:boundary)";
+		
+		# Add fixed fields
+		$scheme['createdAt'] = 'NOW()';
+		
+		# Insert the data
+		if (!$this->databaseConnection->insert ($this->settings['database'], 'schemes', $scheme, false, true, false, false, 'INSERT', $functionValues)) {
+			#!# Need to populate $error;
+			return false;
+		}
+		
+		# Return the scheme moniker
+		return $scheme['moniker'];
+	}
 }
 
 ?>

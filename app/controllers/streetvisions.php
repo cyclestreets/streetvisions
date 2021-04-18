@@ -214,20 +214,13 @@ class streetvisions
 		# If the form is successful, assemble the data
 		if ($scheme) {
 			
-			# Handle geometries
-			$functionValues = array ('boundary' => $scheme['boundary']);
-			$scheme['boundary'] = "ST_GeomFromGeoJSON(:boundary)";
-			
 			# Handle user details
 			$scheme['username'] = $user['username'];
 			$scheme['person'] = $user['name'];
 			unset ($scheme['password']);
 			
-			# Other fields
-			$scheme['createdAt'] = 'NOW()';
-			
-			# Insert the data
-			if (!$result = $this->databaseConnection->insert ($this->settings['database'], 'schemes', $scheme, false, true, false, false, 'INSERT', $functionValues)) {
+			# Add the scheme
+			if (!$schemeMoniker = $this->schemesModel->addScheme ($scheme, $error)) {
 				#!# Need to report error to the UI properly
 				application::dumpData ($this->databaseConnection->error ());
 				return false;
@@ -235,7 +228,7 @@ class streetvisions
 			
 			# Redirect the user to the new scheme page
 			#!# Needs result flash
-			$redirectTo = $this->baseUrl . '/' . $scheme['moniker'] . '/';
+			$redirectTo = $this->baseUrl . '/' . $schemeMoniker . '/';
 			#!# HTML needs to be written to
 			$html = application::sendHeader (302, $redirectTo);
 		}
