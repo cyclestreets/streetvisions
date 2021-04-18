@@ -1,2 +1,11 @@
 
 RewriteEngine On
+RewriteRule ^$ index.html?action=schemeslist [L]
+RewriteRule ^add.html$ index.html?action=schemeadd [L]
+RewriteRule ^([^/]+)/$ index.html?action=schemeshow&scheme=$1 [L]
+RewriteRule ^([^/]+)$ /$1/ [L,R=301]
+RewriteRule ^([^/]+)/edit.html$ index.html?action=schemeedit&scheme=$1 [L]
+RewriteRule ^([^/]+)/addvision.html$ index.html?action=visionadd&scheme=$1 [L]
+RewriteRule ^([^/]+)/vision([1-9][0-9]*)/$ index.html?action=visionshow&scheme=$1&vision=$2 [L]
+RewriteRule ^([^/]+)/vision([1-9][0-9]*)$ /$1/$2/ [L,R=301]
+RewriteRule ^([^/]+)/vision([1-9][0-9]*)/edit.html$ index.html?action=visionedit&scheme=$1&vision=$2 [L]

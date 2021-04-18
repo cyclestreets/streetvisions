@@ -23,6 +23,34 @@ class streetvisions
 	{
 		# Specify available actions
 		$actions = array (
+			'schemeslist' => array (
+				'description' => false,
+				'url' => '/',
+			),
+			'schemeadd' => array (
+				'description' => false,
+				'url' => '/add.html',
+			),
+			'schemeshow' => array (
+				'description' => false,
+				'url' => '/%scheme/',
+			),
+			'schemeedit' => array (
+				'description' => false,
+				'url' => '/%scheme/edit.html',
+			),
+			'visionadd' => array (
+				'description' => false,
+				'url' => '/%scheme/addvision.html',
+			),
+			'visionshow' => array (
+				'description' => false,
+				'url' => '/%scheme/vision%vision/',
+			),
+			'visionedit' => array (
+				'description' => false,
+				'url' => '/%scheme/vision%vision/edit.html',
+			),
 		);
 		
 		#  Return the list
@@ -114,4 +142,46 @@ class streetvisions
 	{
 	}
 	
+	
+	
+	# List schemes
+	public function schemeslist ()
+	{
+	}
+	
+	
+	# Add scheme
+	public function schemeadd ()
+	{
+	}
+	
+	
+	# Show scheme
+	public function schemeshow ()
+	{
+	}
+	
+	
+	# Edit scheme
+	public function schemeedit ()
+	{
+	}
+	
+	
+	# Add vision
+	public function visionadd ()
+	{
+	}
+	
+	
+	# Show vision
+	public function visionshow ()
+	{
+	}
+	
+	
+	# Edit vision
+	public function visionedit ()
+	{
+	}
 }
