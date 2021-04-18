@@ -264,6 +264,9 @@ class streetvisions
 		
 		# Populate the template
 		$this->template['scheme'] = $scheme;
+		
+		# Set the default map data
+		$this->settings['geojsonData'] = json_decode ($scheme['boundary']);
 	}
 	
 	

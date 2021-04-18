@@ -63,6 +63,14 @@ var streetvisions = (function ($) {
 		},
 		
 		
+		// Show scheme
+		schemeshow: function ()
+		{
+			// Add a map with the specified data
+			streetvisions.leafletMap (_settings.geojsonData);
+		},
+		
+		
 		// Leaflet map
 		leafletMap: function (geojsonData)
 		{
