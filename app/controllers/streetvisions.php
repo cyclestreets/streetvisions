@@ -94,6 +94,10 @@ class streetvisions
 		# Validate the specified local action
 		$this->action = (isSet ($_GET['action']) && isSet ($this->actions[$_GET['action']]) ? $_GET['action'] : 'page404');
 		
+		# Load the model
+		require_once ('app/models/schemes.php');
+		$this->schemesModel = new schemesModel ($this->databaseConnection, $this->settings);
+		
 		# Run the action
 		$this->{$this->action} ();
 		
@@ -192,7 +196,7 @@ class streetvisions
 			
 			# Ensure the moniker does not already exist
 			if (strlen ($unfinalisedData['moniker'])) {
-				if ($this->databaseConnection->selectOne ($this->settings['database'], 'schemes', array ('moniker' => $unfinalisedData['moniker']))) {
+				if ($this->schemesModel->getScheme ($unfinalisedData['moniker'])) {
 					$form->registerProblem ('monikertaken', "Sorry, there is <a href=\"{$this->baseUrl}/{$unfinalisedData['moniker']}/\" target=\"_blank\" title=\"[Link opens in a new window]\">already a scheme</a> with that URL moniker.", 'moniker');
 				}
 			}
