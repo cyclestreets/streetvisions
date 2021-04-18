@@ -66,7 +66,7 @@ class streetvisions
 	
 	
 	# Constructor
-	public function __construct ($settings, $baseUrl = NULL)
+	public function __construct ($settings, $baseUrl = NULL, $applicationPath = NULL)
 	{
 		# Load libraries
 		require_once ('application.php');
@@ -83,7 +83,7 @@ class streetvisions
 		if ($baseUrl !== NULL) {$this->baseUrl = $baseUrl;}		// Override if supplied in constructor, as an embedded application
 		
 		# Load the templatiser
-		$this->loadTemplatiser ();
+		$this->loadTemplatiser ($applicationPath);
 		
 		# Get the actions registry
 		$this->actions = $this->actions ();
@@ -100,6 +100,7 @@ class streetvisions
 		# Set standard template values
 		$this->template['action'] = $this->action;
 		$this->template['baseUrl'] = $this->baseUrl;
+		$this->template['applicationPath'] = $applicationPath;
 		
 		# Compile the HTML from the template, which the boostrap file will then echo
 		foreach ($this->template as $placeholder => $fragmentHtml) {
@@ -110,7 +111,7 @@ class streetvisions
 	
 	
 	# Function to load the templatiser
-	private function loadTemplatiser ()
+	private function loadTemplatiser ($applicationPath)
 	{
 		# Load the library
 		require_once ('libraries/smarty-3.1.39/libs/Smarty.class.php');
@@ -119,10 +120,10 @@ class streetvisions
 		$this->templateHandle = new Smarty ();
 		// $this->templateHandle->caching = 0;
 		// $this->templateHandle->force_compile = true;
-		$this->templatesDirectory = $_SERVER['DOCUMENT_ROOT'] . $this->baseUrl . '/app/views/';
+		$this->templatesDirectory = $_SERVER['DOCUMENT_ROOT'] . $applicationPath . '/app/views/';
 		$this->templateHandle->setTemplateDir ($this->templatesDirectory);
-		$this->templateHandle->setCompileDir ($_SERVER['DOCUMENT_ROOT'] . $this->baseUrl . '/data/tempgenerated/templates_c/');
-		$this->tplDirectory = $_SERVER['DOCUMENT_ROOT'] . $this->baseUrl . '/data/tempgenerated/templates_tpl/';
+		$this->templateHandle->setCompileDir ($_SERVER['DOCUMENT_ROOT'] . $applicationPath . '/data/tempgenerated/templates_c/');
+		$this->tplDirectory = $_SERVER['DOCUMENT_ROOT'] . $applicationPath . '/data/tempgenerated/templates_tpl/';
 		$this->templateHandle->assign ('templates_tpl', $this->tplDirectory);
 		
 		# Start an array of template assignments that client pages can write to
