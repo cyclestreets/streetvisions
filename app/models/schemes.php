@@ -17,7 +17,15 @@ class schemesModel
 	public function getScheme ($moniker)
 	{
 		# Get the scheme from the database
-		if (!$scheme = $this->databaseConnection->selectOne ($this->settings['database'], 'schemes', array ('moniker' => $moniker))) {return false;}
+		if (!$scheme = $this->databaseConnection->selectOne ($this->settings['database'], 'schemes', array ('moniker' => $moniker), '*, ST_AsGeoJSON(boundary) AS boundary')) {return false;}
+		
+		# Remove internal fields
+		unset ($scheme['id']);
+		unset ($scheme['private']);
+		unset ($scheme['deleted']);
+		unset ($scheme['username']);
+		unset ($scheme['createdAt']);
+		unset ($scheme['updatedAt']);
 		
 		# Return the scheme
 		return $scheme;
