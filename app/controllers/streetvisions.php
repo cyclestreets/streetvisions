@@ -94,9 +94,13 @@ class streetvisions
 		# Validate the specified local action
 		$this->action = (isSet ($_GET['action']) && isSet ($this->actions[$_GET['action']]) ? $_GET['action'] : 'page404');
 		
-		# Load the model
+		# Load the schemes model
 		require_once ('app/models/schemes.php');
 		$this->schemesModel = new schemesModel ($this->databaseConnection, $this->settings);
+		
+		# Load the user model
+		require_once ('app/models/user.php');
+		$this->userModel = new userModel ($this->databaseConnection, $this->settings);
 		
 		# Run the action
 		$this->{$this->action} ();
@@ -203,7 +207,7 @@ class streetvisions
 			
 			# Validate username and password against the CycleStreets API
 			if (strlen ($unfinalisedData['username']) && strlen ($unfinalisedData['password'])) {
-				if (!$user = $this->validateUser ($unfinalisedData['username'], $unfinalisedData['password'], $userError)) {
+				if (!$user = $this->userModel->validateUser ($unfinalisedData['username'], $unfinalisedData['password'], $userError)) {
 					$form->registerProblem ('userinvalid', $userError, array ('username', 'password'));
 				}
 			}
@@ -233,31 +237,6 @@ class streetvisions
 			$html = application::sendHeader (302, $redirectTo);
 		}
 		
-	}
-	
-	
-	# Helper function to validate a user
-	private function validateUser ($identifier, $password, &$error = false)
-	{
-		# Assemble the data
-		$url = $this->settings['cyclestreetsApiBaseUrl'] . '/v2/user.authenticate' . '?key=' . $this->settings['cyclestreetsApiKey'];
-		$postData = array (
-			'identifier'	=> $identifier,
-			'password'		=> $password,
-		);
-		
-		# Validate the user; see: https://www.cyclestreets.net/api/v2/user.authenticate/
-		$result = application::file_post_contents ($url, $postData);
-		$user = json_decode ($result, true);
-		
-		# If an error is returned, allocate it for the UI
-		if (isSet ($user['error'])) {
-			$error = $user['error'];
-			return false;
-		}
-		
-		# Otherwise return the user data
-		return $user;
 	}
 	
 	
