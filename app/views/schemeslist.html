@@ -1,21 +1,92 @@
+    
 
-	<section class="visions">
-		<section class="sidebar">
-			
-			<h2>Current schemes</h2>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
+
+    <!-- Fontawesome icons -->
+    <script src="/js/lib/fontawesome/fontawesome-kit-7bd5544b77.js"></script>
+	
+    <script src="/js/lib/jquery/jquery.min.js"></script>
+	
+    <link rel="stylesheet" type="text/css" href="{$applicationPath}/css/streetvisions.css" />
+    <script src="{$applicationPath}/js/streetvisions.js"></script>
+    <script>
+        $(function () {
+            streetvisions.initialise ({$settingsJs}, '{$action}');
+        });
+    </script>
+	
+    <section class="schemes-list">
+        <section class="header">
+            <div class="flex">
+                <div class="title-block">
+                    <h1>Widen My Path</h1>
+                    <h2>Schemes</h2>
+                </div>
+                <div class="description-block">
+                    <p>Widen My Path is a bandits sed Dolores voluptatem enim qui voluptatem alias. Sint veniam rerum alias error. Et eum temporibus eum animi illo. Dolores veritatis recusandae libero rerum ut porro. Est consectetur soluta dolor praesentium sit illum nihil.</p>
+                </div>
+            </div>
+            <hr />
+            <div class="header-controls">
+                <div class="new-scheme">
+                    <a class="new-scheme-button button button-general" href="{$baseUrl}/add.html"><i class="fa fa-plus-circle"></i> New scheme</a>
+                </div>
+                <div class="segmented-control">
+                    <div class="ios-segmented-control">
+                        <span class="selection"></span>
+                        <div class="option">
+                            <input type="radio" id="popular" name="current-view" value="popular">
+                            <label for="popular"><span>Popular</span></label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="all" name="current-view" value="all">
+                            <label for="all"><span>All</span></label>
+                        </div>
+                        <div class="option">
+                            <input type="radio" id="latest" name="current-view" value="latest">
+                            <label for="latest"><span>Latest</span></label>
+                        </div>
+                    </div>
+                </div>
+                <div class="search-bar">
+                    <!--<i class="fa fa-search"></i>-->
+                    <input id="search" placeholder="Search for a place or postcode..."/>
+                </div>
+
+            </div>
+        </section>
+
+
+        <section class="schemes">
 			{if ($schemes)}
-				<ul>
+            <ul>
 				{foreach from=$schemes item=scheme}
-					<li><a href="{$baseUrl}/{$scheme.moniker}/">{$scheme.name|htmlspecialchars}</a></li>
+                <li>
+                    <div class="card">
+                        <div class="card-image">
+                            <img src="/images/placeholders/vision_map_placeholder.png" />
+                        </div>
+                        <div class="post-code">
+                            <h1>CB1</h1>
+                        </div>
+                        <div class="content">
+                            <div class="likes">
+                                <i class="fa fa-lightbulb"></i><p>88</p>
+                            </div>
+                            <h4>{$scheme.name|htmlspecialchars}</h4>
+                            <h5>{$scheme.person|htmlspecialchars}</h5>
+                            <p>{$scheme.description|htmlspecialchars}</p>
+                        </div>
+                        <div class="read-more">
+                            <a href="{$baseUrl}/{$scheme.moniker}/">View scheme <i class="fa fa-chevron-right"></i></a>
+                        </div>
+                    </div>
+                </li>
 				{/foreach}
-				</ul>
+            </ul>
 			{else}
 				<p>There are no current schemes. You can add one below.</p>
 			{/if}
-			
-			<h2>Add scheme</h2>
-			<p><a href="{$baseUrl}/add.html">Add scheme</a></p>
-			
-		</section>
-	</section>
-
+        </section>

@@ -2,8 +2,14 @@ var streetvisions = (function ($) {
 	
 	'use strict';
 	
-	// Settings defaults
 	var _settings = {
+		
+		// CycleStreets API; obtain a key at https://www.cyclestreets.net/api/apply/
+		apiBaseUrl: 'https://api.cyclestreets.net',
+		apiKey: 'YOUR_API_KEY',
+		
+		// Mapbox API key
+		mapboxApiKey: 'YOUR_MAPBOX_API_KEY',
 		
 		// Initial map location
 		defaultLatitude: false,
@@ -15,12 +21,12 @@ var streetvisions = (function ($) {
 		
 		// Data
 		geojsonData: {}
-	};
-	
+	}
+
 	// Properties
-	var _action;
+	var _initialToolPosition = null; // Store the initial dragged position of a tool
+	var _draggedToolType = null; // When dragging a tool in builder, store the tool type
 	
-		
 	return {
 		
 	// Public functions
@@ -35,8 +41,6 @@ var streetvisions = (function ($) {
 				}
 			});
 			
-			streetvisions.initUi ();
-			
 			// Run action, if defined and existing
 			if (action) {
 				if (typeof streetvisions[action] == 'function') {
@@ -47,27 +51,43 @@ var streetvisions = (function ($) {
 		
 		
 		// Function to initialise the UI
-		initUi: function ()
+		schemeslist: function ()
 		{
 			// Segmented controls
 			streetvisions.segmentedControl ();
 
+			// Search
+			streetvisions.initSearch ();
+		},
+		
+		
+		visionshow: function ()
+		{
+			// Segmented controls
+			streetvisions.segmentedControl ();
+			
+			// Discussion
+			streetvisions.initDiscussion ();
+		},
+
+
+		schemeshow: function ()
+		{
+			// Segmented controls
+			streetvisions.segmentedControl ();
+			
+			// Add a map with the specified data
+			streetvisions.leafletMap (_settings.geojsonData);
+		},
+		
+		
+		visionadd: function ()
+		{
 			// Toolbox drawers
 			streetvisions.toolbox ();
 
 			// Builder options
 			streetvisions.initBuilder ();
-
-			// Discussion
-			streetvisions.initDiscussion ();
-		},
-		
-		
-		// Show scheme
-		schemeshow: function ()
-		{
-			// Add a map with the specified data
-			streetvisions.leafletMap (_settings.geojsonData);
 		},
 		
 		
@@ -88,7 +108,7 @@ var streetvisions = (function ($) {
 				map.fitBounds(feature.getBounds());
 			}
 		},
-
+		
 		
 		// Segmented control
 		segmentedControl: function ()
@@ -193,6 +213,54 @@ var streetvisions = (function ($) {
 		// Builder options
 		initBuilder: function ()
 		{
+			// Start Leaflet
+			var leafletMap = L.map('map').setView([51.505, -0.09], 13);
+			L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				maxZoom: 18,
+				id: 'mapbox/streets-v11',
+				tileSize: 512,
+				zoomOffset: -1,
+				accessToken: _settings.mapboxApiKey
+			}).addTo(leafletMap);
+
+			// Allow objects to be draggable onto the map
+			$('.tool').draggable ({
+				revert: 'invalid',
+				stack: '#map',
+				start: function (e, ui) {
+					$('.tool').animate ({'opacity': 0.5})
+					_initialToolPosition = $(this).offset();
+				}
+			});
+
+			// Add map as droppable target
+			$('#map').droppable({
+				drop: function() {
+					// Hide element
+					$('.tool').animate ({'opacity': 0, 'width': 0, 'height': 0}, function () {
+						// Return the ement to the box
+						var {top, left} = _initialToolPosition;
+						$('.tool').offset ({top, left});
+						$('.tool').animate ({'opacity': 1, 'width': 100, 'height': 74});
+					});
+
+				}
+			});
+			
+			// On drop on map, create an icon
+			var mapdiv = document.getElementById("map")
+			mapdiv.ondrop = function (e) {
+				e.preventDefault()
+				var coordinates = leafletMap.mouseEventToLatLng (e);
+				L.marker(coordinates,
+					{
+						icon: L.icon({iconUrl: './images/waypoint.png'}),
+						draggable: true
+					})
+				.addTo(leafletMap)
+			}
+			
 			// When clicking on the title bar, make it editable
 			$('.builder .map h2').on ('click', function (event){
 				makeContentEditable (event.target);
@@ -280,6 +348,18 @@ var streetvisions = (function ($) {
 				$('.newDiscussion').slideToggle ();
 			});
 		},
+
+		
+		// Initialise the search box
+		initSearch: function ()
+		{
+			$('#search').on ('keyup', function () {
+				var value = $(this).val ().toLowerCase ();
+				$('.schemes ul li').filter (function () {
+					$(this).toggle ($(this).text ().toLowerCase ().indexOf (value) > -1);
+				});
+			});
+		}
 	};
 	
 } (jQuery));
