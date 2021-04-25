@@ -26,7 +26,7 @@ var streetvisions = (function ($) {
 	// Public functions
 		
 		// Main function
-		initialise: function (action, config)
+		initialise: function (config, action)
 		{
 			// Merge the configuration into the settings
 			$.each (_settings, function (setting, value) {
