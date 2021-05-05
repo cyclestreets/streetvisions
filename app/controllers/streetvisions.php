@@ -180,17 +180,18 @@ class streetvisions
 	# Add scheme
 	public function schemeadd ()
 	{
-		# Create a form to add
+		# Create a form to add a scheme
 		$form = new form (array (
 			'databaseConnection' => $this->databaseConnection,
 			'displayRestrictions' => true,
+			'formCompleteText' => false,
 			'unsavedDataProtection' => true,
 		));
 		$form->dataBinding (array (
 			'database'		=> $this->settings['database'],
 			'table'			=> 'schemes',
 			'intelligence'	=> true,
-			'exclude'		=> array ('boundary', 'components', 'photo', 'private', 'deleted', 'username', 'person'),
+			'exclude'		=> array ('boundary', 'photo', 'private', 'deleted', 'username', 'person'),
 			'attributes'	=> array (
 				'moniker'	=> array ('regexp' => '^([-a-z0-9]+)$', ),
 			),
@@ -246,12 +247,11 @@ class streetvisions
 			}
 			
 			# Redirect the user to the new scheme page
-			#!# Needs result flash
+			#!# Needs result flash message
 			$redirectTo = $this->baseUrl . '/' . $schemeMoniker . '/';
 			#!# HTML needs to be written to
 			$html = application::sendHeader (302, $redirectTo);
 		}
-		
 	}
 	
 	
