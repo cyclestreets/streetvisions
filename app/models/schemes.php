@@ -79,7 +79,6 @@ class schemesModel
 	private function decorateScheme ($scheme)
 	{
 		# Remove internal fields
-		unset ($scheme['id']);
 		unset ($scheme['private']);
 		unset ($scheme['deleted']);
 		unset ($scheme['username']);

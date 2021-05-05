@@ -103,6 +103,10 @@ class streetvisions
 		require_once ('app/models/schemes.php');
 		$this->schemesModel = new schemesModel ($this->databaseConnection, $this->settings);
 		
+		# Load the visions model
+		require_once ('app/models/visions.php');
+		$this->visionsModel = new visionsModel ($this->databaseConnection, $this->settings);
+		
 		# Load the user model
 		require_once ('app/models/user.php');
 		$this->userModel = new userModel ($this->databaseConnection, $this->settings);
@@ -284,6 +288,83 @@ class streetvisions
 	# Add vision
 	public function visionadd ()
 	{
+		# Obtain the scheme moniker
+		$moniker = (isSet ($_GET['scheme']) ? $_GET['scheme'] : false);
+		
+		# Get the scheme
+		if (!$moniker || !$scheme = $this->schemesModel->getScheme ($moniker)) {
+			#!# Error handling needed
+		}
+		
+		# Create a form to add a vision
+		$form = new form (array (
+			'databaseConnection' => $this->databaseConnection,
+			'displayRestrictions' => true,
+			'formCompleteText' => false,
+			'unsavedDataProtection' => true,
+		));
+		$form->dataBinding (array (
+			'database'		=> $this->settings['database'],
+			'table'			=> 'visions',
+			'intelligence'	=> true,
+			'exclude'		=> array ('schemeId', 'visionId', 'version', 'components', 'private', 'deleted', 'username', 'person'),
+			'attributes'	=> array (
+			),
+		));
+		$form->textarea (array (
+			'name'			=> 'components',
+			'title'			=> 'Components (GeoJSON)',
+			'required'		=> true,
+		));
+		$form->input (array (
+			'name'			=> 'username',
+			'title'			=> 'CycleStreets username/e-mail',
+			'required'		=> true,
+		));
+		$form->password (array (
+			'name'			=> 'password',
+			'title'			=> 'CycleStreets password',
+			'required'		=> true,
+		));
+		$formHtml = '';
+		if ($unfinalisedData = $form->getUnfinalisedData ()) {
+			
+			# Validate username and password against the CycleStreets API
+			if (strlen ($unfinalisedData['username']) && strlen ($unfinalisedData['password'])) {
+				if (!$user = $this->userModel->validateUser ($unfinalisedData['username'], $unfinalisedData['password'], $userError)) {
+					$form->registerProblem ('userinvalid', $userError, array ('username', 'password'));
+				}
+			}
+		}
+		$vision = $form->process ($formHtml);
+		$this->template['form'] = $formHtml;
+		
+		# If the form is successful, assemble the data
+		if ($vision) {
+			
+			# Handle user details
+			$vision['username'] = $user['username'];
+			$vision['person'] = $user['name'];
+			unset ($vision['password']);
+			
+			# Add fixed values
+			$vision['schemeId'] = $scheme['id'];
+			$vision['visionId'] = 1;	// #!# Needs to be automatically incremented against current highest
+			$vision['version'] = 1;		// #!# Needs to be automatically incremented against current highest
+			
+			# Add the vision
+			if (!$visionId = $this->visionsModel->addVision ($vision, $error)) {
+				#!# Need to report error to the UI properly
+				application::dumpData ($this->databaseConnection->error ());
+				return false;
+			}
+			
+			# Redirect the user to the new vision page
+			#!# Needs result flash message
+			$redirectTo = $this->baseUrl . '/' . $scheme['moniker'] . '/scheme' . $vision['visionId'] . '/';
+			#!# HTML needs to be written to
+			$html = application::sendHeader (302, $redirectTo);
+		}
 	}
 	
 	
