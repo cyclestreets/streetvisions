@@ -361,7 +361,7 @@ class streetvisions
 			
 			# Redirect the user to the new vision page
 			#!# Needs result flash message
-			$redirectTo = $this->baseUrl . '/' . $scheme['moniker'] . '/scheme' . $vision['visionId'] . '/';
+			$redirectTo = $this->baseUrl . '/' . $scheme['moniker'] . '/vision' . $vision['visionId'] . '/';
 			#!# HTML needs to be written to
 			$html = application::sendHeader (302, $redirectTo);
 		}
