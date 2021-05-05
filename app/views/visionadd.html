@@ -1,13 +1,16 @@
-	
-	
+
 	<!-- Leaflet-->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 
 	<!-- Fontawesome icons -->
-	<script src="/js/lib/fontawesome/fontawesome-kit-7bd5544b77.js"></script>
+	<script src="{$applicationPath}/js/lib/fontawesome/fontawesome-kit-7bd5544b77.js"></script>
 	
 	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+	<!-- Tooltips -->
+	<script type="text/javascript" src="{$applicationPath}/js/lib/tipped/dist/js/tipped.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="{$applicationPath}/js/lib/tipped/dist/css/tipped.css"/>
 	
 	<link rel="stylesheet" type="text/css" href="{$applicationPath}/css/streetvisions.css" />
 	<script src="{$applicationPath}/js/streetvisions.js"></script>
@@ -16,51 +19,79 @@
 			streetvisions.initialise ({$settingsJs}, '{$action}');
 		});
 	</script>
-	
-	
+
 	<section class="builder">
+		<form id="builderData">
+			<input type="text" id="builderDataObject" name="builderDataObject" value="">
+		</form>
 		<section class="map">
-			<a href="{$baseUrl}/schemeshow.html"> <i class="back-arrow fa fa-chevron-circle-left"></i></a>
-			<h1>Changes on Mill Road</h1>
-			<hr />
-			<div class="title">
-				<h2 class="untitled"><i class="fa fa-pencil-alt"></i> Click to add vision title</h2>
-				<h3>Jordan Smith</h3>
-				<h4 class="untitled"><i class="fa fa-pencil-alt"></i> Click to add vision description</h4>
-			</div>
-			<div id="map">
-				<div>
-					TEst
+			<div class="map-header">
+				<a href="{$baseUrl}/schemeshow.html"> <i class="back-arrow fa fa-chevron-circle-left"></i></a>
+				<h1>Changes on Mill Road</h1>
+				<a class="button button-general publish" type="submit" href="#">Publish <i class="fa fa-upload"></i></a>
+				
+				<hr />
+				<div class="title">
+					<h2 class="untitled required"> Click to add vision title</h2>
+					<h3>Jordan Smith</h3>
+					<h4 class="untitled required"> Click to add vision description</h4>
 				</div>
 			</div>
-			<h2>Q&A</h2>
-			<h4>How does your design ensure that people with disabilities are not disadvantaged</h4>
-			<p class="description">Proposal description. Eum earum ad at suscipit omnis est. Quas voluptas quasi ab deserunt</p>
+			<div id="leaflet">
+				<div class="leafletInstructions">
+					<h1><i class="fa fa-hammer"></i> Widen My Path</h1>
+					<p>To build your vision, please drag items from the toolbox onto the map.</p>
+				</div>
+			</div>
+			<div class="questions">
+
+				<h2><i class="fa fa-question-circle"></i> Q&A</h2>
+				<div class="question">
+					<h4>How does your design ensure that people with disabilities are not disadvantaged?</h4>
+					<p class="description untitled required">Click to add your answer</p>
+				</div>
+				
+				<div class="question">
+					<h4>What effects, if any would your design have on any local businesses, e.g. on deliveries and customer access?</h4>
+					<p class="description untitled required">Click to add your answer</p>
+				</div>
 			
-			<h4>How does your design ensure that people with disabilities are not disadvantaged</h4>
-			<p class="description">Proposal description. Eum earum ad at suscipit omnis est. Quas voluptas quasi ab deserunt</p>
-			
-			<h4>How does your design ensure that people with disabilities are not disadvantaged</h4>
-			<p class="description">Proposal description. Eum earum ad at suscipit omnis est. Quas voluptas quasi ab deserunt</p>
+				<div class="question">
+					<h4>How does your design ensure that access to properties remains possible (even if through-traffic is not permitted)?</h4>
+					<p class="description untitled required">Click to add your answer</p>
+				</div>
+			</div>
 		</section>
 
 		<section class="toolbox">
-			<a class="button button-general publish" href="#">Publish <i class="fa fa-upload"></i></a>
+			<h2>Toolbox</h2>
 			<hr>
+			<h5>Create a new vision by clicking on an item in the toolbox to read more about it. There are many different elements available, so do spend some time getting to know what’s in the toolbox.</h5>
 			<div class="padded-content">
-				<h5>Create a new vision by clicking on an item in the toolbox to read more about it. There are many different elements available, so do spend some time getting to know what’s in the toolbox.</h5>
-				<h4>Toolbox</h4>
 				<div class="toolbox">
 				</div>
 			</div>
 
 			<div class="toolbox-card">
 				<i class="close-card fa fa-times-circle"></i>
-				<h1>Parklet</h1>
+				<i class="icon fa fa-plus"></i><h1>Parklet</h1>
 				<p>A parklet is a sidewalk extension that provides more space and amenities for people using the street. Usually parklets are installed on parking lanes and use several parking spaces. Parklets typically extend out from the sidewalk at the level of the sidewalk to the width of the adjacent parking space.</p>
 			</div>
 		</section>
 		
 	</section>
-	
 
+	<div class="modalBackground">
+		<div class="modalContent">
+			<div class="modal box-shadow">
+				<div class="innerContent">
+					<h1><i class="fa fa-exclamation"></i> Oops...</h1>
+					<hr>
+					<p>It seems you haven't filled out all the information we need for this vision yet. Please check you have
+						filled out the title, description, and FAQ questions.</p>
+				</div>
+				<a class="button button-general ok-button" href="#">Ok</a>
+			</div>
+		</div>
+	</div>
+	

@@ -22,13 +22,17 @@ var streetvisions = (function ($) {
 
 	// Properties
 	var _initialToolPosition = null; // Store the initial dragged position of a tool
-	var _draggedTool = null; // Store the tool being dragged
+	var _draggedTool = null; // Div of the tool being dragged
+	var _draggedToolObject = null; // Object containing information about the tool being dragged
+	var _leafletMap; // Class property leaflet map
+	var _leafletMarkers = []; // User-added map markers
 	var toolboxObjects = [
 		{
 			type: 'cycleParking', 
 			description: 'A parking area for bicycles.',
 			groups: 'cycling',
 			icon: 'fa-parking',
+			colour: '#3BA735'
 		},
 		{
 			type: 'seating', 
@@ -65,12 +69,14 @@ var streetvisions = (function ($) {
 			description: 'A delivery bay is a space where delivery vehicles can temporarily park while engaging in deliveries, without blocking the pavement.',
 			groups: ['driving', 'walking'],
 			icon: 'fa-parking',
+			colour: '#0D6FBE'
 		},
 		{
 			type: 'chargingPoint', 
 			description: 'A charging station for vehicles.',
 			groups: ['cycling', 'driving'],
 			icon: 'fa-truck-loading',
+			colour: '#4D3BAB'
 		},
 		{
 			type: 'trafficCalming', 
@@ -89,6 +95,7 @@ var streetvisions = (function ($) {
 			description: '',
 			groups: ['walking', 'nature'],
 			icon: 'fa-tree',
+			colour: '#2B8732'
 		},
 		{
 			type: 'pavementImprovement', 
@@ -125,6 +132,7 @@ var streetvisions = (function ($) {
 			description: '',
 			groups: ['driving', 'cycling'],
 			icon: 'fa-car-crash',
+			colour: '#862EB2'
 		},
 		{
 			type: 'disabledParking', 
@@ -176,6 +184,9 @@ var streetvisions = (function ($) {
 			
 			// Discussion
 			streetvisions.initDiscussion ();
+
+			// Map
+			streetvisions.initLeaflet ('leaflet');
 		},
 
 
@@ -191,6 +202,9 @@ var streetvisions = (function ($) {
 		
 		visionadd: function ()
 		{
+			// Init modal
+			streetvisions.initModal ();
+			
 			// Add toolbox objects from defintion
 			streetvisions.populateToolbox ();
 			
@@ -206,12 +220,15 @@ var streetvisions = (function ($) {
 		leafletMap: function (geojsonData)
 		{
 			// Create a map
-			var map = L.map ('map').setView ([_settings.defaultLatitude, _settings.defaultLongitude], _settings.defaultZoom);
+			var map = L.map ('leaflet').setView ([_settings.defaultLatitude, _settings.defaultLongitude], _settings.defaultZoom);
 			
 			// Add tile background
 			L.tileLayer (_settings.tileUrl, {
 				attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
 			}).addTo (map);
+
+			// Add a layer group to manage dropped tools
+			_toolLayerGroup = L.layerGroup().addTo(map);
 			
 			// Add the GeoJSON to the map
 			if (geojsonData) {
@@ -260,7 +277,7 @@ var streetvisions = (function ($) {
 			var toolboxGroup;
 			var toolboxOpen
 			var toolboxPrettyName;
-			toolboxObjects.map ((tool) => {
+			toolboxObjects.map ((tool, i) => {
 				// If groups is a string, convert it into an array
 				var groups = (!Array.isArray (tool.groups) ? [tool.groups] : tool.groups)
 				
@@ -287,12 +304,24 @@ var streetvisions = (function ($) {
 					
 					// Add this tool to the existing header
 					var toolboxGroupUl = $('.toolbox .' + group + ' ul');
+					var style = getColourCSS(i, toolboxObjects.length);
 					var toolPrettyName = streetvisions.convertCamelCaseToSentence (tool.type);
 					$(toolboxGroupUl).append (
-						`<li><i class="fa ${tool.icon}"></i><p>${toolPrettyName}</p></li>`
+						`<li data-tool="${tool.type}" style="background-color: ${style}; color: white;"><i class="fa ${tool.icon}"></i><p>${toolPrettyName}</p></li>`
 					);
 				})
 			});
+
+			// Generate random colour for tools
+			function getColourCSS(i, length) {
+				const randomInt = (min, max) => {
+					return Math.floor(Math.random() * (max - min + 1)) + min;
+				};
+				var h = randomInt(0, 360);
+				var s = randomInt(42, 98);
+				var l = randomInt(30, 50);
+				return `hsl(${h},${s}%,${l}%)`;
+			};
 		},
 
 
@@ -362,49 +391,99 @@ var streetvisions = (function ($) {
 				}
 				
 			};
-
-			// Display a toolbox card when the element is selected
-			// !TODO having "read" the card once could be saved as a cookie, so the user doesn't have to constantly do this extra step to add map elements
-			$('.toolbox .group-contents ul li').on ('click', function () {
-				$('.toolbox-card').slideDown ();
-			});
-
 			// Enable the toolbox card to be closed
 			$('.close-card').on ('click', function (){
-				$('.toolbox-card').slideUp ();
+				hideHelpCard ();
 			});
 
 			// Initially, hide the toolbox popup
 			$('.toolbox-card').hide ();
+
+			// Hide help card
+			function hideHelpCard () {
+				$('.toolbox-card').slideUp ();
+			}
+
+			// Open help card
+			function openHelpCard () {
+				$('.toolbox-card').slideDown ();
+			}
+			
+			// Populate help card
+			function populateHelpCard (type) {
+				var object = toolboxObjects.find(o => o.type === type);
+
+				if (object == 'undefined') {
+					return false
+				}
+				
+				// Populate card
+				$('.toolbox-card i.icon').removeClass().addClass('icon fa').addClass(object.icon);
+				$('.toolbox-card h1').text(streetvisions.convertCamelCaseToSentence(object.type));
+				$('.toolbox-card p').text(object.description);
+			}
+
+			// When clicking a tool, populate the help box
+			$('.toolbox .group-contents ul li').on ('click', function () {
+				var toolType = $(this).data('tool');
+				if (!toolType) {
+					hideHelpCard();
+					return;
+				}
+				populateHelpCard (toolType);
+				openHelpCard ();
+			});
 		},
 
-	
-		// Builder options
-		initBuilder: function ()
+
+		// Initiate a Leaflet map
+		initLeaflet: function (element)
 		{
-			// Start Leaflet
-			var leafletMap = L.map('map').setView([51.505, -0.09], 13);
+			_leafletMap = L.map(element).setView([51.505, -0.09], 16);
 			L.tileLayer (_settings.tileUrl, {
 				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
 				maxZoom: 18,
 				id: 'mapbox/streets-v11',
 				tileSize: 512,
 				zoomOffset: -1
-			}).addTo(leafletMap);
+			}).addTo(_leafletMap);
+		},
+		
+		
+		// Builder options
+		initBuilder: function ()
+		{
+			// Start Leaflet
+			streetvisions.initLeaflet('leaflet')
 
 			// Allow objects to be draggable onto the map
 			$('.toolbox .group-contents ul li').draggable ({
 				revert: 'invalid',
-				stack: '#map',
+				stack: '#leaflet',
 				start: function (e, ui) {
+					// Disable the help indicator as user has now dragged onto map
+					$('.leafletInstructions').addClass ('hidden');
+					
+					// Store the toolname
 					_draggedTool = $(this);
+					var tool = $(this).data('tool');
+					_draggedToolObject = toolboxObjects.find(o => o.type === tool);
+					_draggedToolObject.colour = $(this).css('background-color');
+					
+					// Add dragging style
 					$(this).animate ({'opacity': 0.5})
+					
+					// Save initial position, to be used to return the item to this position when it's dropped
 					_initialToolPosition = $(this).offset();
+				},
+				stop: function () {
+					// Add dragging style
+					$(this).animate ({'opacity': 1})
 				}
 			});
 
 			// Add map as droppable target
-			$('#map').droppable({
+			$('#leaflet').droppable({
 				drop: function() {
 					// Hide element
 					$(_draggedTool).animate ({'opacity': 0}, function () {
@@ -413,31 +492,114 @@ var streetvisions = (function ($) {
 						$(_draggedTool).animate ({'opacity': 1});
 						$(_draggedTool).offset ({top, left});
 					});
-
 				}
 			});
 			
+			// Template for the FontAwesome icon to drop onto map
+			var fontAwesomeIcon = function () {
+				// Get icon of tool that is currently being dragged
+				var icon = _draggedToolObject.icon;
+				var colour = _draggedToolObject.colour;
+
+				return L.divIcon({
+					html: `
+					<span class="fa-stack fa-2x">
+						<i class="fas fa-map-marker fa-stack-2x" style="color: ${colour}"></i>
+						<i class="fa ${icon} fa-stack-1x" style="color: white"></i>
+					</span>
+					`,
+					iconSize: [20, 20],
+					iconAnchor: L.point(41, 62),
+					className: 'leafletFontAwesomeIcon'
+				});
+			};
+
+			// Check the bounds of a leaflet marker, return bool in/out box
+			const checkBounds = function (marker, northEast, southWest) {
+				var bounds = new L.LatLngBounds(
+					new L.LatLng(northEast[0], northEast[1]),
+					new L.LatLng(southWest[0], southWest[1])
+				);
+				var markerPosition = marker.getLatLng();
+				return bounds.contains(new L.LatLng(markerPosition.lat, markerPosition.lng))
+			};
+			
 			// On drop on map, create an icon
-			var mapdiv = document.getElementById("map")
+			// Also, create the drag handler for the marker
+			var mapdiv = document.getElementById('leaflet')
 			mapdiv.ondrop = function (e) {
 				e.preventDefault()
-				var coordinates = leafletMap.mouseEventToLatLng (e);
-				L.marker(coordinates,
+				var coordinates = _leafletMap.mouseEventToLatLng (e);
+				var id = Date.now().toString();
+				var marker = L.marker(
+					coordinates,
 					{
-						icon: L.icon({iconUrl: '../images/waypoint.png'}),
-						draggable: true
+						icon: fontAwesomeIcon(),
+						draggable: true,
+						uniqueId: id,
 					})
-				.addTo(leafletMap)
-			}
+				
+					marker.on('move', function (event) {
+					var bounds = _leafletMap.getBounds();
+					var northEast = [bounds._northEast.lat-0.001, bounds._northEast.lng-0.001];
+					var southWest = [bounds._southWest.lat-0.001, bounds._southWest.lng-0.001];
+					if (!checkBounds(marker, northEast, southWest)) {
+						$(this._icon).fadeOut(150, function () {
+							_leafletMap.removeLayer(marker);
+						});
+					};
+				});
+				
+				// On drop, show a modal to add description to this marker
+				// !TODO check if this is actually one of our toolbox elements being dropped?
+				var htmlContent = '<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> New marker</h1>';
+				htmlContent += '<hr>';
+				htmlContent += '<p>Please describe the element you just added:</p>';
+				htmlContent += '<textarea class="description" placeholder="This element improves the community by..." rows="4"></textarea>';
+				htmlContent += `<a class="button button-general close-popup" data-new="true" data-id="${id}" href="#">Save</a>`;
+			
+				marker.addTo(_leafletMap);
+
+				// Add custom class to this marker
+				$(marker._icon).addClass(id);
+
+				// Store this marker
+				_leafletMarkers.push({
+					coordinates: coordinates,
+					object: _draggedToolObject,
+					id: id
+				})
+				
+				Tipped.create('.' + id, htmlContent, {skin: 'light', hideOn: false, padding: '20px', size: 'huge', offset: { x: 30, y: 0 }});
+				Tipped.show('.' + id);
+			};
+
+			// When clicking close on a popup box, save the details
+			$(document).on('click', '.close-popup', function (event) {
+				var objectId = $(this).data('id');
+				var description = $(this).siblings('.description').first().val();
+				
+				var markerKey = _leafletMarkers.findIndex(marker => marker.id == objectId);
+				_leafletMarkers[markerKey].description = description;
+
+				Tipped.hide('.' + objectId);
+				
+				// If this was a first-time popup, delete it and add a normal one without the "New marker" title
+				if ($(this).data('new')){
+					Tipped.remove('.' + objectId);
+					var typeOfObject = streetvisions.convertCamelCaseToSentence(_leafletMarkers[markerKey].object.type);
+					var html = '';
+					html += `<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> ${typeOfObject}</h1>`;
+					html += '<hr>';
+					html += '<p>To edit this marker, please write in the box below:</p>'
+					html += `<textarea class="description" rows="4">${description}</textarea>`;
+					html += `<a class="button button-general close-popup" data-new="false" data-id="${objectId}" href="#">Save</a>`;
+					Tipped.create('.' + objectId, html, {skin: 'light', size: 'huge', offset: { x: 30, y: 0 }});
+				}
+			});
 			
 			// When clicking on the title bar, make it editable
-			$('.builder .map h2').on ('click', function (event){
-				makeContentEditable (event.target);
-				removeUntitledClass (event.target);
-			});
-
-			// When clicking on the description bar, make it editable
-			$('.builder .map h4').on ('click', function (event){
+			$('.builder .title h2, .builder .title h4, .builder p.description').on ('click', function (event){
 				makeContentEditable (event.target);
 				removeUntitledClass (event.target);
 			});
@@ -453,6 +615,71 @@ var streetvisions = (function ($) {
 				// Change the opacity to indicate action
 				$(target).removeClass ('untitled');
 			};
+
+			// When clicking publish button, check if all fields have been filled in
+			$('.publish').on('click', function () {
+				// Check if all fields have been filled out
+				var canPublish = true;
+				$.each($('.required'), function (indexInArray, textElement) {
+					if ($(textElement).text().includes('Click to add')) {
+						canPublish = false;
+					}
+					if (!canPublish) {return;}
+				});
+
+				// If all fields aren't filled out, don't publish
+				if (!canPublish) {
+					streetvisions.showModal ({
+						text: '<i class="fa fa-exclamation"></i> Oops...',
+						description: "It seems you haven't filled out all the information we need for this vision yet. Please check you have filled out the title, description, and FAQ questions."
+					});
+				}
+
+				// Gather the textual data into an object
+				var faq = []
+				$.each($('.question'), function (indexInArray, object) {
+					faq.push ({
+						question: $(object).find('h4').first().text(),
+						answer: $(object).find('p').first().text()
+					});
+				});
+				var textualData = {
+					visionTitle: $('.title h2').text(),
+					visionDescription: $('.title h4').text(),
+					visionFAQ: faq
+				}
+
+				// Populate hidden form with stringified object
+				var stringifiedJson = JSON.stringify(textualData);
+				$('#builderDataObject').attr('value', stringifiedJson);
+			});
+		},
+
+
+		// Function to display a modal
+		showModal: function (modalObject, htmlContent = false, onClick = false)
+		{
+			if (modalObject) {
+				$('.modalBackground h1').html(modalObject.text);
+				$('.modalBackground p').text(modalObject.description);
+			} else {
+				$('.modalContent .innerContent').html (htmlContent);
+			}
+			
+			if (onClick) {
+				$('.modal ok-button').on('click', function () {
+					onClick();
+				})
+			};
+
+			$('.modalBackground').show();
+		},
+
+		initModal: function ()
+		{
+			$('.modal .button').on ('click', function () {
+				$('.modalBackground').hide();
+			})
 		},
 
 
