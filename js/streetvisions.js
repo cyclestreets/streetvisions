@@ -1,3 +1,8 @@
+// Streetvisions implementation code
+
+/*jslint browser: true, white: true, single: true, for: true, long: true */
+/*global $, alert, console, window, jQuery, L, Tipped */
+
 var streetvisions = (function ($) {
 	
 	'use strict';
@@ -18,7 +23,7 @@ var streetvisions = (function ($) {
 		
 		// Data
 		geojsonData: {}
-	}
+	};
 
 	// Properties
 	var _initialToolPosition = null; // Store the initial dragged position of a tool
@@ -38,31 +43,31 @@ var streetvisions = (function ($) {
 			type: 'seating', 
 			description: 'Public outdoor seating, like a bench or seat.',
 			groups: 'walking',
-			icon: 'fa-chair',
+			icon: 'fa-chair'
 		},
 		{
 			type: 'parklet', 
 			description: 'A parklet is a sidewalk extension that provides more space and amenities for people using the street. Usually parklets are installed on parking lanes and use several parking spaces. Parklets typically extend out from the sidewalk at the level of the sidewalk to the width of the adjacent parking space.',
 			groups: 'walking',
-			icon: 'fa-tree',
+			icon: 'fa-tree'
 		},
 		{
 			type: 'cycleLane', 
 			description: 'A lane for bicycles.',
 			groups: 'cycling',
-			icon: 'fa-road',
+			icon: 'fa-road'
 		},
 		{
 			type: 'pointClosure', 
 			description: 'Stop through-traffic to open up the space for cycling and walking',
 			groups: ['driving', 'cycling'],
-			icon: 'fa-hand-paper',
+			icon: 'fa-hand-paper'
 		},
 		{
 			type: 'carParking', 
 			description: 'Parking space or spaces for cars.',
 			groups: 'driving',
-			icon: 'fa-parking',
+			icon: 'fa-parking'
 		},
 		{
 			type: 'deliveryBay', 
@@ -82,13 +87,13 @@ var streetvisions = (function ($) {
 			type: 'trafficCalming', 
 			description: 'A device like a road hump, that causes traffic to slow.',
 			groups: 'driving',
-			icon: 'fa-traffic-light',
+			icon: 'fa-traffic-light'
 		},
 		{
 			type: 'plantingArea', 
 			description: 'Small area for greenery',
 			groups: ['walking', 'nature'],
-			icon: 'fa-seedling',
+			icon: 'fa-seedling'
 		},
 		{
 			type: 'tree',
@@ -101,31 +106,31 @@ var streetvisions = (function ($) {
 			type: 'pavementImprovement', 
 			description: '',
 			groups: 'pedestrians',
-			icon: 'fa-walking',
+			icon: 'fa-walking'
 		},
 		{
 			type: 'crossing', 
 			description: 'Pedestrian crossing',
 			groups: 'pedestrians',
-			icon: 'fa-traffic-light',
+			icon: 'fa-traffic-light'
 		},
 		{
 			type: 'playArea', 
 			description: '',
 			groups: 'pedestrians',
-			icon: 'fa-snowman',
+			icon: 'fa-snowman'
 		},
 		{
 			type:'cafeSpace', 
 			description: 'External seating and tables for nearby café/restaurant.',
 			groups: 'walking',
-			icon: 'fa-coffee',
+			icon: 'fa-coffee'
 		},
 		{
 			type: 'parkingRestriction', 
 			description: '',
 			groups: 'driving',
-			icon: 'fa-parking',
+			icon: 'fa-parking'
 		},
 		{
 			type: 'bollard', 
@@ -138,9 +143,9 @@ var streetvisions = (function ($) {
 			type: 'disabledParking', 
 			description: 'A specially reserved parking space.',
 			groups: 'driving',
-			icon: 'fa-parking',
+			icon: 'fa-parking'
 		}
-	]
+	];
 
 	
 	return {
@@ -159,7 +164,7 @@ var streetvisions = (function ($) {
 			
 			// Run action, if defined and existing
 			if (action) {
-				if (typeof streetvisions[action] == 'function') {
+				if (typeof streetvisions[action] === 'function') {
 					streetvisions[action] ();
 				}
 			}
@@ -228,7 +233,7 @@ var streetvisions = (function ($) {
 			}).addTo (map);
 
 			// Add a layer group to manage dropped tools
-			_toolLayerGroup = L.layerGroup().addTo(map);
+			L.layerGroup().addTo(map);
 			
 			// Add the GeoJSON to the map
 			if (geojsonData) {
@@ -246,7 +251,7 @@ var streetvisions = (function ($) {
 			const SEGMENTED_CONTROL_INDIVIDUAL_SEGMENT_SELECTOR = ".ios-segmented-control .option input";
 			const SEGMENTED_CONTROL_BACKGROUND_PILL_SELECTOR = ".ios-segmented-control .selection";
 			
-			forEachElement(SEGMENTED_CONTROL_BASE_SELECTOR, (elem) => {
+			forEachElement (SEGMENTED_CONTROL_BASE_SELECTOR, function (elem) {
 				elem.addEventListener ('change', updatePillPosition);
 			});
 			window.addEventListener ('resize',
@@ -254,8 +259,10 @@ var streetvisions = (function ($) {
 			); // Prevent pill from detaching from element when window resized. Becuase this is rare I haven't bothered with throttling the event
 			
 			function updatePillPosition () {
-				forEachElement (SEGMENTED_CONTROL_INDIVIDUAL_SEGMENT_SELECTOR, (elem, index) => {
-					if (elem.checked) moveBackgroundPillToElement (elem, index);
+				forEachElement (SEGMENTED_CONTROL_INDIVIDUAL_SEGMENT_SELECTOR, function (elem, index) {
+					if (elem.checked) {
+						moveBackgroundPillToElement (elem, index);
+					}
 				});
 			}
 		
@@ -275,14 +282,15 @@ var streetvisions = (function ($) {
 			// Iterate through each of the toolbox objects
 			var html;
 			var toolboxGroup;
-			var toolboxOpen
-			var toolboxPrettyName;
-			toolboxObjects.map ((tool, i) => {
+			var toolboxOpen;
+			var toolboxPrettyName;			
+			toolboxObjects.map (function (tool, i) {
+				
 				// If groups is a string, convert it into an array
-				var groups = (!Array.isArray (tool.groups) ? [tool.groups] : tool.groups)
+				var groups = (!Array.isArray (tool.groups) ? [tool.groups] : tool.groups);
 				
 				// Iterate through the groups
-				groups.map ((group) => {
+				groups.map (function (group) {
 					toolboxGroup = $('.toolbox .' + group);
 					toolboxPrettyName = streetvisions.capitalizeFirstLetter (group);
 					
@@ -304,24 +312,24 @@ var streetvisions = (function ($) {
 					
 					// Add this tool to the existing header
 					var toolboxGroupUl = $('.toolbox .' + group + ' ul');
-					var style = getColourCSS(i, toolboxObjects.length);
+					var style = getColourCSS (i, toolboxObjects.length);
 					var toolPrettyName = streetvisions.convertCamelCaseToSentence (tool.type);
 					$(toolboxGroupUl).append (
 						`<li data-tool="${tool.type}" style="background-color: ${style}; color: white;"><i class="fa ${tool.icon}"></i><p>${toolPrettyName}</p></li>`
 					);
-				})
+				});
 			});
 
 			// Generate random colour for tools
-			function getColourCSS(i, length) {
-				const randomInt = (min, max) => {
+			function getColourCSS (i, length) {
+				const randomInt = function (min, max) {
 					return Math.floor(Math.random() * (max - min + 1)) + min;
 				};
 				var h = randomInt(0, 360);
 				var s = randomInt(42, 98);
 				var l = randomInt(30, 50);
 				return `hsl(${h},${s}%,${l}%)`;
-			};
+			}
 		},
 
 
@@ -334,7 +342,7 @@ var streetvisions = (function ($) {
 		convertCamelCaseToSentence: function (string){
 			return (string
 				.replace(/^[a-z]|[A-Z]/g, function(v, i) {
-					return i === 0 ? v.toUpperCase() : " " + v.toLowerCase();
+					return (i === 0 ? v.toUpperCase() : " " + v.toLowerCase());
 				})
 			);
 		},
@@ -411,10 +419,10 @@ var streetvisions = (function ($) {
 			
 			// Populate help card
 			function populateHelpCard (type) {
-				var object = toolboxObjects.find(o => o.type === type);
+				var object = toolboxObjects.find ((o) => o.type === type);
 
 				if (object == 'undefined') {
-					return false
+					return false;
 				}
 				
 				// Populate card
@@ -448,13 +456,13 @@ var streetvisions = (function ($) {
 				zoomOffset: -1
 			}).addTo(_leafletMap);
 		},
-		
-		
+
+	
 		// Builder options
 		initBuilder: function ()
 		{
 			// Start Leaflet
-			streetvisions.initLeaflet('leaflet')
+			streetvisions.initLeaflet('leaflet');
 
 			// Allow objects to be draggable onto the map
 			$('.toolbox .group-contents ul li').draggable ({
@@ -467,18 +475,18 @@ var streetvisions = (function ($) {
 					// Store the toolname
 					_draggedTool = $(this);
 					var tool = $(this).data('tool');
-					_draggedToolObject = toolboxObjects.find(o => o.type === tool);
+					_draggedToolObject = toolboxObjects.find ((o) => (o.type === tool));
 					_draggedToolObject.colour = $(this).css('background-color');
 					
 					// Add dragging style
-					$(this).animate ({'opacity': 0.5})
+					$(this).animate ({'opacity': 0.5});
 					
 					// Save initial position, to be used to return the item to this position when it's dropped
 					_initialToolPosition = $(this).offset();
 				},
 				stop: function () {
 					// Add dragging style
-					$(this).animate ({'opacity': 1})
+					$(this).animate ({'opacity': 1});
 				}
 			});
 
@@ -487,8 +495,9 @@ var streetvisions = (function ($) {
 				drop: function() {
 					// Hide element
 					$(_draggedTool).animate ({'opacity': 0}, function () {
-						// Return the ement to the box
-						var {top, left} = _initialToolPosition;
+						// Return the element to the box
+						var top = _initialToolPosition[0];
+						var left = _initialToolPosition[1];
 						$(_draggedTool).animate ({'opacity': 1});
 						$(_draggedTool).offset ({top, left});
 					});
@@ -504,8 +513,8 @@ var streetvisions = (function ($) {
 				return L.divIcon({
 					html: `
 					<span class="fa-stack fa-2x">
-						<i class="fas fa-map-marker fa-stack-2x" style="color: ${colour}"></i>
-						<i class="fa ${icon} fa-stack-1x" style="color: white"></i>
+  						<i class="fas fa-map-marker fa-stack-2x" style="color: ${colour}"></i>
+  						<i class="fa ${icon} fa-stack-1x" style="color: white"></i>
 					</span>
 					`,
 					iconSize: [20, 20],
@@ -516,38 +525,39 @@ var streetvisions = (function ($) {
 
 			// Check the bounds of a leaflet marker, return bool in/out box
 			const checkBounds = function (marker, northEast, southWest) {
-				var bounds = new L.LatLngBounds(
+    			var bounds = new L.LatLngBounds(
 					new L.LatLng(northEast[0], northEast[1]),
 					new L.LatLng(southWest[0], southWest[1])
 				);
 				var markerPosition = marker.getLatLng();
-				return bounds.contains(new L.LatLng(markerPosition.lat, markerPosition.lng))
+				return bounds.contains(new L.LatLng(markerPosition.lat, markerPosition.lng));
 			};
 			
 			// On drop on map, create an icon
 			// Also, create the drag handler for the marker
-			var mapdiv = document.getElementById('leaflet')
+			var mapdiv = document.getElementById('leaflet');
 			mapdiv.ondrop = function (e) {
-				e.preventDefault()
+				e.preventDefault();
 				var coordinates = _leafletMap.mouseEventToLatLng (e);
 				var id = Date.now().toString();
-				var marker = L.marker(
-					coordinates,
-					{
-						icon: fontAwesomeIcon(),
-						draggable: true,
-						uniqueId: id,
-					})
+				var marker = L.marker (coordinates, {
+					icon: fontAwesomeIcon(),
+					draggable: true,
+					uniqueId: id
+				});
 				
-					marker.on('move', function (event) {
+				marker.on('move', function (event) {
 					var bounds = _leafletMap.getBounds();
 					var northEast = [bounds._northEast.lat-0.001, bounds._northEast.lng-0.001];
 					var southWest = [bounds._southWest.lat-0.001, bounds._southWest.lng-0.001];
-					if (!checkBounds(marker, northEast, southWest)) {
+					if (!checkBounds (marker, northEast, southWest)) {
 						$(this._icon).fadeOut(150, function () {
-							_leafletMap.removeLayer(marker);
+							_leafletMap.removeLayer (marker);
 						});
-					};
+					}
+					
+					var markerKey = _leafletMarkers.findIndex ((marker) => (marker.id == id));
+					_leafletMarkers[markerKey].latLng = [marker._latlng.lat, marker._latlng.lng];
 				});
 				
 				// On drop, show a modal to add description to this marker
@@ -560,15 +570,19 @@ var streetvisions = (function ($) {
 			
 				marker.addTo(_leafletMap);
 
+				
 				// Add custom class to this marker
 				$(marker._icon).addClass(id);
-
+				
 				// Store this marker
 				_leafletMarkers.push({
-					coordinates: coordinates,
 					object: _draggedToolObject,
-					id: id
-				})
+					'id': id
+				});
+				
+				// Update the marker object with current coordinates
+				var markerKey = _leafletMarkers.findIndex ((marker) => (marker.id == id));
+				_leafletMarkers[markerKey].latLng = [marker._latlng.lat, marker._latlng.lng];
 				
 				Tipped.create('.' + id, htmlContent, {skin: 'light', hideOn: false, padding: '20px', size: 'huge', offset: { x: 30, y: 0 }});
 				Tipped.show('.' + id);
@@ -579,7 +593,7 @@ var streetvisions = (function ($) {
 				var objectId = $(this).data('id');
 				var description = $(this).siblings('.description').first().val();
 				
-				var markerKey = _leafletMarkers.findIndex(marker => marker.id == objectId);
+				var markerKey = _leafletMarkers.findIndex ((marker) => (marker.id == objectId));
 				_leafletMarkers[markerKey].description = description;
 
 				Tipped.hide('.' + objectId);
@@ -591,7 +605,7 @@ var streetvisions = (function ($) {
 					var html = '';
 					html += `<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> ${typeOfObject}</h1>`;
 					html += '<hr>';
-					html += '<p>To edit this marker, please write in the box below:</p>'
+					html += '<p>To edit this marker, please write in the box below:</p>';
 					html += `<textarea class="description" rows="4">${description}</textarea>`;
 					html += `<a class="button button-general close-popup" data-new="false" data-id="${objectId}" href="#">Save</a>`;
 					Tipped.create('.' + objectId, html, {skin: 'light', size: 'huge', offset: { x: 30, y: 0 }});
@@ -633,11 +647,12 @@ var streetvisions = (function ($) {
 						text: '<i class="fa fa-exclamation"></i> Oops...',
 						description: "It seems you haven't filled out all the information we need for this vision yet. Please check you have filled out the title, description, and FAQ questions."
 					});
+					return;
 				}
 
 				// Gather the textual data into an object
-				var faq = []
-				$.each($('.question'), function (indexInArray, object) {
+				var faq = [];
+				$.each ($('.question'), function (indexInArray, object) {
 					faq.push ({
 						question: $(object).find('h4').first().text(),
 						answer: $(object).find('p').first().text()
@@ -647,11 +662,31 @@ var streetvisions = (function ($) {
 					visionTitle: $('.title h2').text(),
 					visionDescription: $('.title h4').text(),
 					visionFAQ: faq
-				}
+				};
 
+				var geojsonFeatures = {
+					type: 'FeatureCollection',
+					features: _leafletMarkers.map ((marker) => (
+						{
+							type: 'Feature',
+							properties: {
+								description: marker.description,
+								type: marker.object.type
+							},
+							geometry: {
+								type: 'Point',
+								coordinates: [marker.latLng[1], marker.latLng[0]]
+							}
+						}
+					))
+				};
+				
 				// Populate hidden form with stringified object
 				var stringifiedJson = JSON.stringify(textualData);
+				var stringifiedGeoJsonFeatures = JSON.stringify(geojsonFeatures);
+				
 				$('#builderDataObject').attr('value', stringifiedJson);
+				$('#geojsonFeatures').attr('value', stringifiedGeoJsonFeatures);
 			});
 		},
 
@@ -667,19 +702,20 @@ var streetvisions = (function ($) {
 			}
 			
 			if (onClick) {
-				$('.modal ok-button').on('click', function () {
+				$(document).on ('click', '.modal .ok-button', function () {
 					onClick();
-				})
-			};
+				});
+			}
 
 			$('.modalBackground').show();
 		},
-
+		
+		
 		initModal: function ()
 		{
 			$('.modal .button').on ('click', function () {
 				$('.modalBackground').hide();
-			})
+			});
 		},
 
 
@@ -734,14 +770,20 @@ var streetvisions = (function ($) {
 				}
 			};
 
+			// Handler for creating new discussion topic
+			const handleNewDiscussion = function () {
+				// Get new discussion topic
+				var newTopic = $('.newTopicTitle').val();
+				$('.modalBackground').hide();
+			};
+			
 			// Enable a new discussion to be created (display new discussion modal)
 			$('.new-topic').on ('click', function () {
-				$('.newDiscussion').show ();
-			});
-
-			// Close modal
-			$('.closeModal').on ('click', function () {
-				$('.newDiscussion').slideToggle ();
+				var htmlContent = '<h1><i class="fa fa-plus-circle"></i> New discussion</h1>';
+				htmlContent += '<hr>';
+				htmlContent += '<p>Please enter a short topic title for this discussion:</p>';
+				htmlContent += '<input class="newTopicTitle" placeholder="New topic..." />';
+				streetvisions.showModal(false, htmlContent, handleNewDiscussion);
 			});
 		},
 
