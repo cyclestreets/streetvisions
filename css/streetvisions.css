@@ -1,6 +1,6 @@
 /* General styles */
 .button {padding: 7.5px 10px; border-radius: 7.5px; text-decoration: none; transition: .3s; text-align: center;}
-.button.button-general {background-color: #f2bd54; color: #4d0026; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 5px 0 rgba(0,0,0,0.12);}
+.button.button-general {background-color: #f2bd54; color: #4d0026; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 5px 0 rgba(0,0,0,0.12); border: none;}
 .button.button-general:hover {color: #e9e9e9; box-shadow: 0 3px 10px 0 rgba(0,0,0,0.2),0 3px 8px 0 rgba(0,0,0,0.19);}
 .box-shadow {box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12)}
 /* Scheme show section */
@@ -88,7 +88,8 @@ section.vision section.discussion h4 {display: inline-block; margin: 25px 0 15px
 section.vision section.discussion .comment-count {display: inline-block; margin-left: 50px;}
 section.vision section.discussion .comment-count i {margin-right: 5px;}
 section.vision section.discussion .comment-count p {display: inline-block; margin: 0;}
-section.vision section.discussion .discussion-header h5 {display: inline-block; margin: 10px 7.5px;}
+section.vision section.discussion .discussion-header h5 {display: inline-block; margin: 10px 7.5px; padding: 5px; border-radius: 10px;}
+section.vision section.discussion .discussion-header h5:hover {background-color: #eee;}
 section.vision section.discussion .discussion-header>i {transition: .5s;}
 section.vision section.discussion .discussion-header>i.rotated {transform: rotate(-90deg);}
 section.vision section.discussion .discussion-header .answer {margin: 0 30px; font-size: 17px;}
@@ -109,20 +110,19 @@ section.vision .newDiscussion .createNewDiscussion:hover {background-color: #4d0
 /* Builder interface */
 section.builder {display: flex; min-height: 100%; padding-top: 30px}
 section.builder form {display: none;}
-section.builder section.map {flex: 1.8; }
-section.builder section.map .map-header {margin: 20px; border-radius: 10px; background-color: #4d0026; box-shadow: 0 3px 3px 0 rgba(0,0,0,0.4),0 3px 3px 0 rgba(0,0,0,0.7);}
+section.builder section.map {flex: 2.1; }
+section.builder section.map .map-header {margin: 20px 20px 10px; border-radius: 10px; background-color: #4d0026; box-shadow: 0 3px 3px 0 rgba(0,0,0,0.4),0 3px 3px 0 rgba(0,0,0,0.7);}
 section.builder section.toolbox {flex: 1; color: black; margin-left: 15px;}
 section.builder section.map .untitled {opacity: 0.5;}
 
 section.builder section.map .map-header i.back-arrow {display: inline-block; font-size: 25px; margin-left: 15px; transition: 0.5s; color: white; vertical-align: super;}
 section.builder section.map .map-header i.back-arrow:hover {transform: scale(1.1); color: #f2bd54;}
 section.builder section.map .map-header h1 {margin: 17.5px 0 0 25px; font-size: 35px; display: inline-block; color: white;}
-section.builder section.map .map-header a.publish {float: right; margin: 0; margin: 17.5px 20px;}
+section.builder section.map .map-header button.publish {float: right; margin: 0; margin: 17.5px 20px; font-size: 16px; border: none;}
 section.builder section.map .map-header hr {margin: 15px 0; margin-bottom: 15px; border: none; height: 0.5px; background-color: #eee}
-section.builder section.map .map-header h3 {color: #eee; padding-left: 50px; margin: 10px 12.5px 0 30px;}
+section.builder section.map .map-header h3 {color: #eee; padding-left: 20px; margin: 10px 12.5px 0 30px;}
 section.builder section.map .map-header h2 {color: #eee; padding-left: 5px; margin: 0 10px 2.5px 45px; font-size: 30px; max-width: 90%;}
-section.builder section.map .map-header h4 {color: #eee; margin: 15px 10px 10px 70px; min-height: 60px;}
-section.builder section.map .untitled {padding-left: 10px;}
+section.builder section.map .map-header h4 {color: #eee; margin: 15px 10px 10px 50px; min-height: 60px;}
 section.builder section.map .untitled:before {font-family: 'Font Awesome 5 Free'; position: relative; top: 0; left: 0; content:'\f303';}
 section.builder section.map h2 {color: #4d0026; margin-left: 20px;}
 section.builder section.map .questions {margin: 10px 20px; border-radius: 10px; background-color: #4d0026; box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.4), 0 3px 3px 0 rgba(0, 0, 0, 0.7);}
@@ -130,23 +130,51 @@ section.builder section.map .questions h2 {margin-bottom: 0; margin-top: 10px; p
 section.builder section.map .questions h4 {color: #eee; max-width: 90%; font-size: 15px; margin: 10px 0 0 50px;}
 section.builder section.map p {color: #eee; display: inline-block;}
 section.builder section.map p.description {margin: 10px 0 10px 50px; color: #eee;}
-section.builder section.map #leaflet {height: 500px; width: calc(100% - 40px); margin: 20px 20px 15px 20px; border-radius: 10px; z-index: 500; box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.4), 0 3px 3px 0 rgba(0, 0, 0, 0.7);}
-section.builder section.map #leaflet .leafletInstructions {position: relative; z-index: 2000; width: 100%; height: 100%; backdrop-filter: blur(10px); background: rgba(0,0,0,0.7); display: flex; object-position: center; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: all 0.5s ease; animation: pulse 4s ease infinite;}
+section.builder section.map #leaflet {height: 500px; width: calc(100% - 40px); margin: 0 20px; border-radius: 10px; z-index: 500; box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.4), 0 3px 3px 0 rgba(0, 0, 0, 0.7);}
+section.builder section.map #leaflet .geocoder {position: absolute; z-index: 20001; height: 50px; top: 10px; right: 10px;}
+section.builder section.map #leaflet .geocoder button.geocoder-button {display: inline-block; position: absolute; right: 0; height: 40px; width: 40px; border-radius: 10px; border: none; font-size: 18px; background-color: white;}
+section.builder section.map #leaflet .geocoder button.geocoder-button:hover {background-color: #eee;}
+section.builder section.map #leaflet .geocoder input {position: absolute; right: 0; border-radius: 10px; padding: 10px; width: 20px; margin: 0; border: none; display: inline-block;}
+
+section.builder section.map #leaflet .leafletInstructions {position: relative; z-index: 2000; width: 100%; height: 100%; backdrop-filter: blur(2px) saturate(100%) contrast(45%) brightness(70%); -webkit-backdrop-filter: blur(2px) saturate(100%) contrast(45%) brightness(70%); display: flex; object-position: center; flex-direction: column; align-items: center; justify-content: center; transition: all 0.5s ease; padding: 20px; }
 section.builder section.map #leaflet .leafletInstructions.hidden {display: none;}
+section.builder section.map #leaflet .leafletInstructions .content {animation: pulse 4s ease infinite; display: block;}
 section.builder section.map #leaflet .leafletInstructions h1 {color: #f2bd54; margin-bottom: 15px; }
-section.builder section.map #leaflet .leafletInstructions p {display: block; margin: 0 auto 50px;; text-align: center; color: #eee}
+section.builder section.map #leaflet .leafletInstructions p {display: block; margin: 0 auto 10px; text-align: left; color: #eee}
+
+section.builder section.map #leaflet .deleteTarget {position: relative; z-index: 2000; width: 100%; height: 100%; display: flex; object-position: center; flex-direction: column; align-items: center; justify-content: end; transition: all 0.5s ease; padding: 20px; background: rgb(255, 255, 255); background: linear-gradient(0deg, rgb(255, 255, 255) 0%, rgba(255,255,255,0) 32%);}
+
+section.builder section.map #leaflet .deleteTarget .content {animation: pulse 4s ease infinite; display: block; position: absolute; bottom: 55px;}
+section.builder section.map #leaflet .deleteTarget .content:hover {transform: scale(1.1);}
+section.builder section.map #leaflet .deleteTarget .content i {border: 2px solid black; padding: 10px; border-radius: 10px;}
+
 section.builder section.map .leaflet-marker-icon.leafletFontAwesomeIcon .fa-stack-1x {top: -9px; transform: scale(0.9);}
 @keyframes pulse {
     0% {transform: scale(1, 1);}
     50% {transform: scale(1.1, 1.1);}
     100% {transform: scale(1, 1);}
 }
+
+/* Geocoder autocomplete */
+.ui-autocomplete-loading + .loader {display: inline-block;}
+.ui-autocomplete {background-color: white; width: 200px; list-style: none; margin-left: 0; padding-left: 0; border-radius: 10px; z-index: 9999;}
+.ui-autocomplete li {list-style: none; margin-left: 0; padding-left: 0;}
+.ui-autocomplete li:first-child a {padding-top: 9px;}
+.ui-autocomplete li a {padding: 5px 15px 3px; display: block; color: #4d0026;}
+.ui-autocomplete li a span {color: gray; font-size: 0.81em;}
+.ui-autocomplete li a.ui-state-active {cursor: pointer; background-color: #fbf6f8; border-radius: 10px;}
+.ui-helper-hidden-accessible {display: none;}
+
+/* Toolbox */
 section.builder section.toolbox h2 {display: inline-block; margin: 35px 0 10px; color: #4d0026; font-size: 35px;}
+section.builder section.toolbox h5 {cursor: pointer;}
+section.builder section.toolbox>p {padding-right: 25px;}
 section.builder section.toolbox .padded-content {padding: 0 25px 25px 20px;}
 section.builder section.toolbox .padded-content h5 {margin: 0;}
 section.builder section.toolbox .toolbox-header>i {transition: .5s;}
 section.builder section.toolbox .toolbox-header>i.rotated {transform: rotate(-90deg);}
-section.builder section.toolbox .toolbox-header h5 {display: inline-block; margin: 10px 7.5px;}
+section.builder section.toolbox .toolbox-header h5 {display: inline-block; margin: 10px 7.5px; padding: 5px; border-radius: 10px;}
+section.builder section.toolbox .toolbox-header h5:hover {background-color: #eee;}
 section.builder section.toolbox .toolbox-header .group-contents {margin: 0 15px; padding: 0; font-size: 17px;}
 section.builder section.toolbox .toolbox-header .group-contents ul {list-style: none; padding: 0; display: flex; align-items: center; flex-wrap: wrap;}
 section.builder section.toolbox .toolbox-header .group-contents ul li {border-radius: .7em; display: inline-block; padding: 10px; margin: 5px; cursor: pointer; width: 100px; height: 90px; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); transition: box-shadow .25s;}
@@ -161,22 +189,34 @@ section.builder section.toolbox .toolbox-card h1 {color: #f2bd54; display: inlin
 section.builder section.toolbox .toolbox-card p {color: white; text-align: left;}
 section.builder section.toolbox .toolbox-card h2 {font-size: 13px;}
 
+/* Popover content */
 .tpd-skin-dark, .tpd-content {border-radius: 10px;}
 .tpd-content p {font-size: 16px;}
-.tpd-content textarea {display: block; width: 97%; height: 50px; margin-bottom: 10px; border-radius: 5px; padding: 5px;}
+.tpd-content input {display: block; width: 97%; margin-bottom: 20px; border-radius: 5px; padding: 5px; border: none; background-color: #eee;}
 .tpd-content a {text-decoration: none !important; float: right;}
 .tpd-content h1 {margin-top: 0;}
 .tpd-content hr {margin-left: -15px; width: calc(100% + 28px);}
-.tpd-size-huge .tpd-content, .tpd-size-huge .tpd-title {padding: 15px; font-size: 15px; line-height: 20px;}
-.tpd-size-huge .tpd-background { border-radius: 10px; }
+.tpd-content textarea {width: 100%; border-radius: 5px; padding: 5px; border: none; background-color: #eee;}
+.tpd-content .close-popup {float: right;}
+.tpd-content .delete-button {box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 5px 0 rgba(0,0,0,0.12); border: none; float: left; margin: 0 10px;}
+.tpd-content .delete-button:hover {background-color: #eee;}
+.tpd-content i.exit-popup {position: absolute; top: 10px; right: 10px; border: 1px solid transparent; border-radius: 50%; padding: 5px;}
+.tpd-content i.exit-popup:hover {background-color: #eee; color: #f2bd54;}
+
+#puff {cursor: pointer; display: none; position: absolute; height: 32px; width: 32px; background-image: url('/schemes/images/poof.png'); background-repeat: no-repeat; z-index: 99999;}
+
+/* Popover overrides */
+.tpd-size-huge .tpd-content, .tpd-size-huge .tpd-title {padding: 15px; font-size: 15px; line-height: 20px; min-width: 300px; min-height: 200px;}
+.tpd-size-huge .tpd-background {border-radius: 10px;}
 .tpd-size-huge .tpd-stem {width: 24px; height: 12px;margin-left: 8px; margin-top: 2px;}
-.tpd-size-huge.tpd-no-radius .tpd-stem { margin-left: 10px; }
-.tpd-size-huge .tpd-close { margin: 11px 5px 11px 5px; }
-.tpd-size-huge .tpd-close-icon { font-size: 32px; }
+.tpd-size-huge.tpd-no-radius .tpd-stem {margin-left: 10px;}
+.tpd-size-huge .tpd-close {margin: 11px 5px 11px 5px;}
+.tpd-size-huge .tpd-close-icon {font-size: 32px;}
 .tpd-size-huge .tpd-spinner {width: 66px; height: 50px;}
-.tpd-size-huge .tpd-spinner-spin { margin: 14px 0 0 22px; }
+.tpd-size-huge .tpd-spinner-spin {margin: 14px 0 0 22px;}
 .tpd-size-huge .tpd-spinner-spin, .tpd-size-huge .tpd-spinner-spin:after {width: 22px; height: 22px;}
 
+/* Modal */
 .modalBackground {display: none;}
 .modalBackground .modalContent {display: flex; position: absolute; top: 0; width: 100%; height: 100%; background-color: rgba(51, 51, 51, 0.7); z-index: 9999; flex-direction: column; align-items: center; justify-content: center;}
 .modalBackground .modal {display: block; margin: auto;  width: 500px; border-radius: 15px; background-color: white;  padding: 20px;}
@@ -188,13 +228,14 @@ section.builder section.toolbox .toolbox-card h2 {font-size: 13px;}
 
 
 /* Schemes list */
-section.schemes-list .header {background-color: #4d0026; color: white; padding: 40px 70px 0;}
+section.schemes-list {padding-top: 20px; }
+section.schemes-list .header {background-color: #4d0026; color: white; padding: 20px 70px 0; margin: 20px 60px 0; border-radius: 10px; box-shadow: 0 3px 3px 0 rgba(0,0,0,0.4),0 3px 3px 0 rgba(0,0,0,0.7);}
 section.schemes-list .header .flex {display: flex;}
 section.schemes-list .header .title-block {flex: 1;}
 section.schemes-list .header .title-block h1 {font-size: 40px; margin: 20px 40px 0 0;}
 section.schemes-list .header .title-block h2 {color: #f2bd54; margin: 10px 0;}
 section.schemes-list .header .description-block {flex: 2.5; margin-top: 10px; margin-right: 60px;}
-section.schemes-list .header hr {margin-left: -70px; margin-top: 20px; margin-bottom: 0; width: calc(100vw + 70px); }
+section.schemes-list .header hr {margin-left: -70px; margin-top: 20px; margin-bottom: 0; width: calc(100% + 140px); }
 section.schemes-list .header .header-controls {display: flex; padding: 25px 0;}
 section.schemes-list .header .header-controls .new-scheme {flex: 1; padding-top: 10px;}
 section.schemes-list .header .header-controls .new-scheme .new-scheme-button {width: 100px; padding: 7.5px 10px;}
@@ -230,16 +271,20 @@ section.schemes-list section.schemes ul li {text-decoration: none; list-style-ty
 
 
 /* Scheme add */
-section.scheme-add .header {background-color: #4d0026; color: white; padding: 40px 70px 0;}
+section.scheme-add {padding-top: 20px;}
+section.scheme-add .header {background-color: #4d0026; color: white; padding: 10px 70px 0; margin: 40px 100px 10px; border-radius: 10px; box-shadow: 0 3px 3px 0 rgba(0,0,0,0.4),0 3px 3px 0 rgba(0,0,0,0.7);}
 section.scheme-add .header .flex {display: flex;}
 section.scheme-add .header .title-block {flex: 0.7;}
 section.scheme-add .header .title-block h1 {font-size: 40px; margin: 20px 40px 0 0;}
 section.scheme-add .header .title-block h2 {color: #f2bd54; margin: 10px 0 30px;}
-section.scheme-add .header .description-block {flex: 1; margin-top: 50px; margin-right: 60px;}
+section.scheme-add .header .description-block {flex: 1; margin-top: 25px; margin-right: 60px;}
 section.scheme-add .header .new-scheme {flex: 0.5; margin: 50px 20px 0 0; vertical-align: bottom;}
 section.scheme-add .header .new-scheme .new-scheme-button {width: 100px; display: block; margin: 15px auto; text-align: center;}
-section.scheme-add .form {padding: 10px 70px;}
-
+section.scheme-add {background-image: url('/schemes/images/cyclepath.jpg'); background-repeat: no-repeat; background-size: cover; height: 100%;}
+section.scheme-add .form {display: flex; object-position: center; flex-direction: column; align-items: center; justify-content: center;}
+section.scheme-add .form .content {width: auto; padding: 10px 70px; border-radius: 10px;margin: 20px auto; backdrop-filter: blur(5px) saturate(100%) contrast(45%) brightness(150%); -webkit-backdrop-filter: blur(5px) saturate(100%) contrast(45%) brightness(150%);}
+section.scheme-add .form input, section.scheme-add .form textarea {width: 100%;}
+section.scheme-add .form input.button {width: 100px;}
 
 /* Segmented control */
 .ios-segmented-control {background: #E7E6E4; border-radius: 10px; margin: 10px; padding: 2px; border: none; outline: none; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}

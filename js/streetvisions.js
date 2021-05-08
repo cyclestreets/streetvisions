@@ -12,6 +12,12 @@ var streetvisions = (function ($) {
 		// CycleStreets API; obtain a key at https://www.cyclestreets.net/api/apply/
 		apiBaseUrl: 'https://api.cyclestreets.net',
 		apiKey: 'YOUR_API_KEY',
+
+		// Geocoder API URL; re-use of settings values represented as placeholders {%apiBaseUrl}, {%apiKey}, {%autocompleteBbox}, are supported
+		geocoderApiUrl: '{%apiBaseUrl}/v2/geocoder?key={%apiKey}&bounded=1&bbox={%autocompleteBbox}',
+		
+		// BBOX for autocomplete results biasing
+		autocompleteBbox: '-6.6577,49.9370,1.7797,57.6924',
 		
 		// Initial map location
 		defaultLatitude: false,
@@ -25,13 +31,15 @@ var streetvisions = (function ($) {
 		geojsonData: {}
 	};
 
-	// Properties
+	// Properties/state
 	var _initialToolPosition = null; // Store the initial dragged position of a tool
 	var _draggedTool = null; // Div of the tool being dragged
 	var _draggedToolObject = null; // Object containing information about the tool being dragged
 	var _leafletMap; // Class property leaflet map
 	var _leafletMarkers = []; // User-added map markers
-	var toolboxObjects = [
+	
+	// Definitions
+	var _toolboxObjects = [
 		{
 			type: 'cycleParking', 
 			description: 'A parking area for bicycles.',
@@ -210,6 +218,11 @@ var streetvisions = (function ($) {
 			// Init modal
 			streetvisions.initModal ();
 			
+			// Populate pretty names, adding these to the definitions
+			$.each (_toolboxObjects, function (index, tool) {
+				_toolboxObjects[index].prettyName = streetvisions.convertCamelCaseToSentence (tool.type);
+			});
+			
 			// Add toolbox objects from defintion
 			streetvisions.populateToolbox ();
 			
@@ -284,7 +297,7 @@ var streetvisions = (function ($) {
 			var toolboxGroup;
 			var toolboxOpen;
 			var toolboxPrettyName;			
-			toolboxObjects.map (function (tool, i) {
+			_toolboxObjects.map (function (tool, i) {
 				
 				// If groups is a string, convert it into an array
 				var groups = (!Array.isArray (tool.groups) ? [tool.groups] : tool.groups);
@@ -305,17 +318,16 @@ var streetvisions = (function ($) {
 						html += '<i class="fa fa-chevron-down"></i>';
 						html +=	`<h5>${toolboxPrettyName}</h5>`;
 						html += '<div class="group-contents"><ul></ul></div></div>';
-	
+						
 						// Add this to the toolbox 
 						$('div.toolbox').append(html);
 					}
 					
 					// Add this tool to the existing header
 					var toolboxGroupUl = $('.toolbox .' + group + ' ul');
-					var style = getColourCSS (i, toolboxObjects.length);
-					var toolPrettyName = streetvisions.convertCamelCaseToSentence (tool.type);
+					var style = getColourCSS (i, _toolboxObjects.length);
 					$(toolboxGroupUl).append (
-						`<li data-tool="${tool.type}" style="background-color: ${style}; color: white;"><i class="fa ${tool.icon}"></i><p>${toolPrettyName}</p></li>`
+						`<li data-tool="${tool.type}" style="background-color: ${style}; color: white;"><i class="fa ${tool.icon}"></i><p>${tool.prettyName}</p></li>`
 					);
 				});
 			});
@@ -373,32 +385,43 @@ var streetvisions = (function ($) {
 			});
 
 			// Enable toolbox headers to be clickable
-			$('.toolbox-header>h5').on ('click', function (event) {
+			$('.toolbox-header > h5').on ('click', function (event) {
 				toggleToolbox (event);
 			});
 
 			// Enable toolbox chevrons to be clickable
-			$('.toolbox-header>i').on ('click', function (event) {
+			$('.toolbox-header > i').on ('click', function (event) {
 				toggleToolbox (event);
 			});
-
+			
 			// Function to toggle a toolbox open or closed
 			var toggleToolbox = function (event) {
+				
 				// Get current toolbox drawer status
 				var toolboxHeader = $($(event.target)).closest ('.toolbox-header').first();
-				var isOpen = $(toolboxHeader).hasClass ('toolbox-open');
-
-				if (isOpen) {
+				var isCurrentlyOpen = $(toolboxHeader).hasClass ('toolbox-open');
+				
+				// Close action
+				if (isCurrentlyOpen) {
 					$(toolboxHeader).removeClass ('toolbox-open');
 					$(toolboxHeader).find ('i').first ().addClass ('rotated');
 					$(toolboxHeader).find ('.group-contents').first ().slideToggle ();
-				} else {
+				
+				// Open action
+				} else {	// If currently closed
+					
+					// Close any existing first
+					$('.toolbox .toolbox-header i').addClass ('rotated');
+					$('.toolbox .toolbox-header.toolbox-open .group-contents').slideUp ();
+					$('.toolbox .toolbox-header.toolbox-open').removeClass ('toolbox-open');
+					
+					// Open new current
 					$(toolboxHeader).addClass ('toolbox-open');
 					$(toolboxHeader).find ('i').first ().removeClass ('rotated');
 					$(toolboxHeader).find ('.group-contents').first ().slideToggle ();
 				}
-				
 			};
+			
 			// Enable the toolbox card to be closed
 			$('.close-card').on ('click', function (){
 				hideHelpCard ();
@@ -419,7 +442,7 @@ var streetvisions = (function ($) {
 			
 			// Populate help card
 			function populateHelpCard (type) {
-				var object = toolboxObjects.find ((o) => o.type === type);
+				var object = _toolboxObjects.find ((o) => o.type === type);
 
 				if (object == 'undefined') {
 					return false;
@@ -457,6 +480,20 @@ var streetvisions = (function ($) {
 			}).addTo(_leafletMap);
 		},
 
+		// Helper function to implement settings placeholder substitution in a string
+		settingsPlaceholderSubstitution: function (string, supportedPlaceholders)
+		{
+			// Substitute each placeholder
+			var placeholder;
+			$.each(supportedPlaceholders, function (index, field) {
+				placeholder = '{%' + field + '}';
+				string = string.replace(placeholder, _settings[field]);
+			});
+			
+			// Return the modified string
+			return string;
+		},
+
 	
 		// Builder options
 		initBuilder: function ()
@@ -464,6 +501,66 @@ var streetvisions = (function ($) {
 			// Start Leaflet
 			streetvisions.initLeaflet('leaflet');
 
+			// Add geocoder
+			var geocoder = function ()
+			{
+				// Geocoder URL; re-use of settings values is supported, represented as placeholders {%apiBaseUrl}, {%apiKey}, {%autocompleteBbox}
+				var geocoderApiUrl = streetvisions.settingsPlaceholderSubstitution (_settings.geocoderApiUrl, ['apiBaseUrl', 'apiKey', 'autocompleteBbox']);
+				
+				// Attach the autocomplete library behaviour to the location control
+				autocomplete.addTo ('.geocoder input', {
+					sourceUrl: geocoderApiUrl,
+					select: function (event, ui) {
+						var bbox = ui.item.feature.properties.bbox.split(',');	// W,S,E,N
+						_leafletMap.flyToBounds([
+							[bbox[1], bbox[0]],
+							[bbox[3], bbox[2]]
+						],{
+							duration: 2,
+							maxZoom: 14
+						});						
+						
+						closeSearchBox();
+
+						event.preventDefault();
+					}
+				});
+			};
+			geocoder ();
+
+			// Enable search box
+			$('#browse-search-box').on('click', function () {
+				$(this).focus();
+			});
+
+			$('.geocoder-button').on('click', function () {
+				openSearchBox();
+			});
+
+			$('.geocoder-button').on('mouseover', function () {
+				openSearchBox();
+			});
+
+			$('.geocoder-button').on('mouseleave', function () {
+				setTimeout(function () {
+					if ($('.geocoder input').val() == '') {
+						closeSearchBox();
+					}
+				}, 1500);
+			});
+			
+			var closeSearchBox = function () {
+				$('.geocoder input').animate({'width': '20px'});
+			};
+			
+			var openSearchBox = function () {
+				$('.geocoder input').animate({'width': '300px'});
+				$('#browse-search-box').focus();
+			};
+			setTimeout(function () {
+				openSearchBox();
+			}, 1000);
+			
 			// Allow objects to be draggable onto the map
 			$('.toolbox .group-contents ul li').draggable ({
 				revert: 'invalid',
@@ -475,7 +572,7 @@ var streetvisions = (function ($) {
 					// Store the toolname
 					_draggedTool = $(this);
 					var tool = $(this).data('tool');
-					_draggedToolObject = toolboxObjects.find ((o) => (o.type === tool));
+					_draggedToolObject = _toolboxObjects.find ((o) => (o.type === tool));
 					_draggedToolObject.colour = $(this).css('background-color');
 					
 					// Add dragging style
@@ -495,9 +592,10 @@ var streetvisions = (function ($) {
 				drop: function() {
 					// Hide element
 					$(_draggedTool).animate ({'opacity': 0}, function () {
+						
 						// Return the element to the box
-						var top = _initialToolPosition[0];
-						var left = _initialToolPosition[1];
+						var top = _initialToolPosition.top;
+						var left = _initialToolPosition.left;
 						$(_draggedTool).animate ({'opacity': 1});
 						$(_draggedTool).offset ({top, left});
 					});
@@ -524,7 +622,7 @@ var streetvisions = (function ($) {
 			};
 
 			// Check the bounds of a leaflet marker, return bool in/out box
-			const checkBounds = function (marker, northEast, southWest) {
+			var checkBounds = function (marker, northEast, southWest) {
     			var bounds = new L.LatLngBounds(
 					new L.LatLng(northEast[0], northEast[1]),
 					new L.LatLng(southWest[0], southWest[1])
@@ -535,46 +633,82 @@ var streetvisions = (function ($) {
 			
 			// On drop on map, create an icon
 			// Also, create the drag handler for the marker
-			var mapdiv = document.getElementById('leaflet');
+			var mapdiv = document.getElementById ('leaflet');
 			mapdiv.ondrop = function (e) {
-				e.preventDefault();
+				e.preventDefault ();
+				
+				// Create a new Leaflet Marker
 				var coordinates = _leafletMap.mouseEventToLatLng (e);
 				var id = Date.now().toString();
 				var marker = L.marker (coordinates, {
-					icon: fontAwesomeIcon(),
+					icon: fontAwesomeIcon (),
 					draggable: true,
 					uniqueId: id
 				});
 				
-				marker.on('move', function (event) {
+				// Handler for Marker deletion
+				marker.deleteMarker = function () {
+					_leafletMap.removeLayer (marker);
+				}
+				
+				// Handler for Marker move
+				marker.streetVisionsId = id;
+				marker.on ('move', function (event) {
+					// Once we start moving a marker, hide all popups
+					Tipped.hideAll();
+
+					// Show the delete target
+					$('.deleteTarget').slideDown('slow');
+
+					// If we are dragging the icon to near the border of the map, delete it
+					// Get the map bounds
 					var bounds = _leafletMap.getBounds();
 					var northEast = [bounds._northEast.lat-0.001, bounds._northEast.lng-0.001];
-					var southWest = [bounds._southWest.lat-0.001, bounds._southWest.lng-0.001];
+					var southWest = [bounds._southWest.lat+0.001, bounds._southWest.lng+0.001];
+					
+					// Check if the marker is outside those bounds
 					if (!checkBounds (marker, northEast, southWest)) {
+						// Get the offset of the icon, to send to the puff delete animation
+						var offset = getOffset(marker._icon);
+						
+						// Fade out the icon
 						$(this._icon).fadeOut(150, function () {
-							_leafletMap.removeLayer (marker);
+							// Hide delete target
+							$('.deleteTarget').slideUp();
+							
+							// Display poof animation
+							poofEvent (offset.left, offset.top)
+							
+							// Delete the marker from Leaflet
+							marker.deleteMarker();
 						});
 					}
 					
+					// If we are just dragging it around, update the position of the marker
 					var markerKey = _leafletMarkers.findIndex ((marker) => (marker.id == id));
 					_leafletMarkers[markerKey].latLng = [marker._latlng.lat, marker._latlng.lng];
 				});
-				
-				// On drop, show a modal to add description to this marker
-				// !TODO check if this is actually one of our toolbox elements being dropped?
-				var htmlContent = '<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> New marker</h1>';
-				htmlContent += '<hr>';
-				htmlContent += '<p>Please describe the element you just added:</p>';
-				htmlContent += '<textarea class="description" placeholder="This element improves the community by..." rows="4"></textarea>';
-				htmlContent += `<a class="button button-general close-popup" data-new="true" data-id="${id}" href="#">Save</a>`;
-			
-				marker.addTo(_leafletMap);
 
+				// On Marker move end, hide the delete target
+				marker.on ('moveend', function () {
+					$('.deleteTarget').slideUp();
+				})
+
+				// Show a modal to add description to this marker
+				// !TODO check if this is actually one of our toolbox elements being dropped?
+				var htmlContent = '<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> ' + _draggedToolObject.prettyName + '</h1><i class="fa fa-times-circle exit-popup"></i>';
+				htmlContent += '<hr />';
+				htmlContent += '<p>Describe how this element improves the area:</p>';
+				htmlContent += '<input class="description" autofocus="autofocus" />';
+				htmlContent += `<a data-id="${id}" class="button delete-button"><i class="fa fa-trash-alt"></i></a><a class="button button-general close-popup" data-new="true" data-id="${id}" href="#">Save</a>`;
+				
+				// Add the Marker to Leaflet
+				marker.addTo (_leafletMap);
 				
 				// Add custom class to this marker
 				$(marker._icon).addClass(id);
 				
-				// Store this marker
+				// Store this marker in a global object
 				_leafletMarkers.push({
 					object: _draggedToolObject,
 					'id': id
@@ -584,14 +718,83 @@ var streetvisions = (function ($) {
 				var markerKey = _leafletMarkers.findIndex ((marker) => (marker.id == id));
 				_leafletMarkers[markerKey].latLng = [marker._latlng.lat, marker._latlng.lng];
 				
-				Tipped.create('.' + id, htmlContent, {skin: 'light', hideOn: false, padding: '20px', size: 'huge', offset: { x: 30, y: 0 }});
-				Tipped.show('.' + id);
+				// Create and display a popup
+				Tipped.create ('.' + id, htmlContent, {skin: 'light', hideOthers: true, hideOn: false, padding: '20px', size: 'huge', offset: { x: 30, y: 0 }});
+				Tipped.show ('.' + id);
+
+				// Give focus to the input box
+				$('.tpd-content input').focus();
 			};
 
+			// Handler for marker deletion
+			$(document).on('click', '.button.delete-button', function (event) {
+				var id = $(this).data('id');
+				_leafletMap.eachLayer((layer) => {
+					if (layer.hasOwnProperty('streetVisionsId') && layer.streetVisionsId == id) {
+						Tipped.hide('.' + id);
+						var offset = getOffset(layer._icon);
+						poofEvent (offset.left, offset.top)
+						layer.remove();
+					}
+				});
+
+			});
+
+			// Hide deletion target on load
+			$('.deleteTarget').hide();
+			
+			// Get the offset of an element
+			function getOffset(element) {
+				const rect = element.getBoundingClientRect();
+				return {
+					left: rect.left + window.scrollX,
+					top: rect.top + window.scrollY
+				};
+			}
+
+			// Poof of smoke eye-candy animation
+			function animatePoof() {
+				var bgTop = 0,
+					frame = 0,
+					frames = 6,
+					frameSize = 32,
+					frameRate = 80,
+					puff = $('#puff');
+				var animate = function () {
+					if (frame < frames) {
+						puff.css({
+							backgroundPosition: "0 " + bgTop + "px"
+						});
+						bgTop = bgTop - frameSize;
+						frame++;
+						setTimeout(animate, frameRate);
+					}
+				};
+				animate();
+				setTimeout("$('#puff').hide()", frames * frameRate);
+			}
+
+			// Controller for the poof event
+			var poofEvent = function (left, top) {	
+				var xOffset = -20;
+				var yOffset = -5;
+				$(this).fadeOut('fast');
+				$('#puff').css({
+					left: left - xOffset + 'px',
+					top: top - yOffset + 'px'
+				}).show();
+				animatePoof();
+			};
+			
 			// When clicking close on a popup box, save the details
-			$(document).on('click', '.close-popup', function (event) {
-				var objectId = $(this).data('id');
-				var description = $(this).siblings('.description').first().val();
+			$(document).on ('click', '.close-popup', function (event) {
+				saveDetails (this);
+			});
+
+			// Helper to save details of a marker
+			var saveDetails = function (input) {
+				var objectId = $(input).data('id');
+				var description = $(input).siblings('.description').first().val();
 				
 				var markerKey = _leafletMarkers.findIndex ((marker) => (marker.id == objectId));
 				_leafletMarkers[markerKey].description = description;
@@ -599,17 +802,32 @@ var streetvisions = (function ($) {
 				Tipped.hide('.' + objectId);
 				
 				// If this was a first-time popup, delete it and add a normal one without the "New marker" title
-				if ($(this).data('new')){
+				if ($(input).data('new')){
 					Tipped.remove('.' + objectId);
 					var typeOfObject = streetvisions.convertCamelCaseToSentence(_leafletMarkers[markerKey].object.type);
 					var html = '';
-					html += `<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> ${typeOfObject}</h1>`;
+					html += `<h1><i class="fa fa-hard-hat" style="color: #f2bd54"></i> ${typeOfObject}</h1><i class="fa fa-times-circle exit-popup"></i>`;
 					html += '<hr>';
-					html += '<p>To edit this marker, please write in the box below:</p>';
+					html += '<p>Edit this marker in the box below:</p>';
 					html += `<textarea class="description" rows="4">${description}</textarea>`;
-					html += `<a class="button button-general close-popup" data-new="false" data-id="${objectId}" href="#">Save</a>`;
-					Tipped.create('.' + objectId, html, {skin: 'light', size: 'huge', offset: { x: 30, y: 0 }});
+					html += `<a data-id="${objectId}" class="button delete-button"><i class="fa fa-trash-alt"></i></a><a class="button button-general close-popup" data-new="false" data-id="${objectId}" href="#">Save</a>`;
+					Tipped.create('.' + objectId, html, {skin: 'light', size: 'huge', hideOthers: true, offset: { x: 30, y: 0 }});
 				}
+			};
+
+			// Close popup when pressing enter key
+			document.addEventListener('keypress', function (e) {
+				if (e.key === 'Enter') {
+					if ($(e.target).hasClass ('description')) {
+						var input = $(e.target).siblings ('.button').first();
+						saveDetails (input);
+					}
+				}
+			});
+
+			// Exit popup without saving
+			$(document).on('click', '.exit-popup', function () {
+				Tipped.hideAll();
 			});
 			
 			// When clicking on the title bar, make it editable
@@ -620,8 +838,8 @@ var streetvisions = (function ($) {
 			
 			// Select and edit content
 			var makeContentEditable = function (target) {
-				$(target).attr('contenteditable','true');
-				document.execCommand('selectAll',false,null);
+				$(target).attr ('contenteditable','true');
+				document.execCommand ('selectAll',false, null);
 			};
 
 			// Remove untitled status
@@ -631,7 +849,7 @@ var streetvisions = (function ($) {
 			};
 
 			// When clicking publish button, check if all fields have been filled in
-			$('.publish').on('click', function () {
+			$('.publish').on('click', function (event) {
 				// Check if all fields have been filled out
 				var canPublish = true;
 				$.each($('.required'), function (indexInArray, textElement) {
@@ -647,22 +865,18 @@ var streetvisions = (function ($) {
 						text: '<i class="fa fa-exclamation"></i> Oops...',
 						description: "It seems you haven't filled out all the information we need for this vision yet. Please check you have filled out the title, description, and FAQ questions."
 					});
+					event.preventDefault();
 					return;
 				}
 
-				// Gather the textual data into an object
-				var faq = [];
+				// Gather the questionnaire data into an object
+				var questionnaire = [];
 				$.each ($('.question'), function (indexInArray, object) {
-					faq.push ({
+					questionnaire.push ({
 						question: $(object).find('h4').first().text(),
 						answer: $(object).find('p').first().text()
 					});
 				});
-				var textualData = {
-					visionTitle: $('.title h2').text(),
-					visionDescription: $('.title h4').text(),
-					visionFAQ: faq
-				};
 
 				var geojsonFeatures = {
 					type: 'FeatureCollection',
@@ -682,11 +896,10 @@ var streetvisions = (function ($) {
 				};
 				
 				// Populate hidden form with stringified object
-				var stringifiedJson = JSON.stringify(textualData);
-				var stringifiedGeoJsonFeatures = JSON.stringify(geojsonFeatures);
-				
-				$('#builderDataObject').attr('value', stringifiedJson);
-				$('#geojsonFeatures').attr('value', stringifiedGeoJsonFeatures);
+				$('#name').attr('value', $('.title h2').text());
+				$('#description').attr('value', $('.title h4').text());
+				$('#components').attr('value', JSON.stringify(geojsonFeatures));
+				$('#questionnaire').attr('value', JSON.stringify(questionnaire));
 			});
 		},
 

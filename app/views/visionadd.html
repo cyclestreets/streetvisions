@@ -12,6 +12,8 @@
 	<script type="text/javascript" src="{$applicationPath}/js/lib/tipped/dist/js/tipped.min.js"></script>
 	<link rel="stylesheet" type="text/css" href="{$applicationPath}/js/lib/tipped/dist/css/tipped.css"/>
 	
+	<script type="text/javascript" src="{$applicationPath}/js/lib/geocoder.js"></script>
+	
 	<link rel="stylesheet" type="text/css" href="{$applicationPath}/css/streetvisions.css" />
 	<script src="{$applicationPath}/js/streetvisions.js"></script>
 	<script>
@@ -20,16 +22,19 @@
 		});
 	</script>
 
-	<section class="builder">
-		<form id="builderData">
-			<input type="text" id="builderDataObject" name="builderDataObject" value="">
-			<input type="text" id="geojsonFeatures" name="geojsonFeatures" value="">
+	<section class="builder" method="post">
+		<div id="puff"></div>
+		<form id="visionForm">
+			<input type="text" id="name" name="name" value="">
+			<input type="text" id="description" name="description" value="">
+			<input type="text" id="components" name="components" value="">
+			<input type="text" id="questionnaire" name="questionnaire" value="">
 		</form>
 		<section class="map">
 			<div class="map-header">
 				<a href="{$baseUrl}/schemeshow.html"> <i class="back-arrow fa fa-chevron-circle-left"></i></a>
 				<h1>Changes on Mill Road</h1>
-				<a class="button button-general publish" type="submit" href="#">Publish <i class="fa fa-upload"></i></a>
+				<button type="submit" class="button button-general publish" form="visionForm">Publish <i class="fa fa-upload"></i></button>
 				
 				<hr />
 				<div class="title">
@@ -39,13 +44,25 @@
 				</div>
 			</div>
 			<div id="leaflet">
+				<div class="geocoder">
+					<input id="browse-search-box" type="text" name="location" autocomplete="off" placeholder="Move map to place or postcode" tabindex="1" spellcheck="false" autocorrect="off" class="ui-autocomplete-input" />
+					<button class="geocoder-button"><i class="fa fa-search"></i></button>
+				</div>
 				<div class="leafletInstructions">
-					<h1><i class="fa fa-hammer"></i> Widen My Path</h1>
-					<p>To build your vision, please drag items from the toolbox onto the map.</p>
+					<div class="content">
+						<h1><i class="fa fa-hammer"></i> Widen My Path</h1>
+						<p>To get started, find a place or search for a postcode.</p>
+						<p>Then, drag items from the toolbox onto the map to build your vision.</p>
+					</div>
+				</div>
+				<div class="deleteTarget">
+					<div class="content">
+						<i class="fa fa-trash-alt fa-2x"></i>
+					</div>
 				</div>
 			</div>
 			<div class="questions">
-
+				
 				<h2><i class="fa fa-question-circle"></i> Q&A</h2>
 				<div class="question">
 					<h4>How does your design ensure that people with disabilities are not disadvantaged?</h4>
@@ -66,8 +83,8 @@
 
 		<section class="toolbox">
 			<h2>Toolbox</h2>
-			<hr>
-			<h5>Create a new vision by clicking on an item in the toolbox to read more about it. There are many different elements available, so do spend some time getting to know what’s in the toolbox.</h5>
+			<hr />
+			<p>Create a new vision by clicking on an item in the toolbox to read more about it. There are many different elements available, so do spend some time getting to know what’s in the toolbox.</p>
 			<div class="padded-content">
 				<div class="toolbox">
 				</div>
