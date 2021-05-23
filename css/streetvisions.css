@@ -249,7 +249,7 @@ section.schemes-list .header .header-controls .search-bar i {position: absolute;
 section.schemes-list .card {display: inline-block; width: 350px; margin: 0 30px 30px 0; line-height: 1.42857143; background-color: #fff; border-radius: .7em; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); transition: box-shadow .25s; color: black;}
 section.schemes-list .card:hover {box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);}
 section.schemes-list .card .post-code {position: absolute; border-radius: 100%; background-color: #f2bd54; margin: -48px 115px; color: #4d0026; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12);}
-section.schemes-list .card .card-image {width: 350px; height: 200px; border-top-left-radius: .7em; border-top-right-radius: .7em; display: block; overflow: hidden;}
+section.schemes-list .card .map {width: 350px; height: 200px; border-top-left-radius: .7em; border-top-right-radius: .7em; display: block; overflow: hidden; z-index: 0;}
 section.schemes-list .card .card-image img {width: 350px; height: 200px; object-fit: cover; transition: all .25s ease; object-position: 50% 5%;}
 section.schemes-list .card .content {padding: 5px 15px 15px 15px; text-align: left;}
 section.schemes-list .card .content .likes {float: right;}

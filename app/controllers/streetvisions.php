@@ -175,9 +175,17 @@ class streetvisions
 	{
 		# Get the schemes
 		$schemes = $this->schemesModel->getSchemes ();
-		
+
 		# Send the schemes to the template
 		$this->template['schemes'] = $schemes;
+		
+		# Set the GeoJSON data for the map
+		$geojsonData = array ();
+		foreach ($schemes as $scheme) {
+			$id = 'map' . $scheme['id'];
+			$geojsonData[$id] = json_decode ($scheme['boundary']);
+		}
+		$this->settings['geojsonData'] = $geojsonData;
 	}
 	
 	

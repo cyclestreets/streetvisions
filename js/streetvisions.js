@@ -184,9 +184,14 @@ var streetvisions = (function ($) {
 		{
 			// Segmented controls
 			streetvisions.segmentedControl ();
-
+			
 			// Search
 			streetvisions.initSearch ();
+			
+			// Initialise map for each scheme
+			$.each (_settings.geojsonData, function (mapId, boundary) {
+				streetvisions.leafletMap (mapId, boundary);
+			});
 		},
 		
 		
