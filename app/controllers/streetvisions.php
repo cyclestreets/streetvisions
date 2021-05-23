@@ -182,8 +182,8 @@ class streetvisions
 		# Set the GeoJSON data for the map
 		$geojsonData = array ();
 		foreach ($schemes as $scheme) {
-			$id = 'map' . $scheme['id'];
-			$geojsonData[$id] = json_decode ($scheme['boundary']);
+			$mapId = 'map' . $scheme['id'];
+			$geojsonData[$mapId] = json_decode ($scheme['boundary']);
 		}
 		$this->settings['geojsonData'] = $geojsonData;
 	}
@@ -282,8 +282,21 @@ class streetvisions
 		# Populate the template
 		$this->template['scheme'] = $scheme;
 		
-		# Set the default map data
-		$this->settings['geojsonData'] = json_decode ($scheme['boundary']);
+		# Set the map data for the scheme
+		$this->settings['geojsonData'] = array (
+			'scheme' => json_decode ($scheme['boundary'])
+		);
+		
+		# Get the visions
+		$visions = $this->visionsModel->getVisions ($scheme['id']);
+		$this->template['visions'] = $visions;
+		
+		# Set the map data for each vision
+		$this->settings['geojsonData']['visions'] = array ();
+		foreach ($visions as $vision) {
+			$mapId = 'map' . $vision['visionId'];
+			$this->settings['geojsonData']['visions'][$mapId] = $vision['components'];
+		}
 	}
 	
 	

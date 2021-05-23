@@ -214,7 +214,12 @@ var streetvisions = (function ($) {
 			streetvisions.segmentedControl ();
 			
 			// Add a map into the specified ID with the specified data
-			streetvisions.leafletMap ('leaflet', _settings.geojsonData);
+			streetvisions.leafletMap ('map', _settings.geojsonData.scheme);
+			
+			// Initialise map for each scheme
+			$.each (_settings.geojsonData.visions, function (mapId, boundary) {
+				streetvisions.leafletMap (mapId, boundary);
+			});
 		},
 		
 		

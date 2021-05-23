@@ -66,7 +66,7 @@ class visionsModel
 		$visions = array ();
 		foreach ($visionsByIndex as $vision) {
 			$visionId = $vision['visionId'];
-			$visions[$moniker] = $visionId;
+			$visions[$visionId] = $vision;
 		}
 		
 		# Format the data
@@ -92,6 +92,10 @@ class visionsModel
 		# Decode JSON fields
 		$vision['components'] = json_decode ($vision['components'], true);
 		$vision['questionnaire'] = json_decode ($vision['questionnaire'], true);
+		
+		#!# For now, set likes and comments to random value, pending database implementation
+		$vision['likes'] = rand (1, 100);
+		$vision['comments'] = rand (1, 100);
 		
 		# Return the vision
 		return $vision;
