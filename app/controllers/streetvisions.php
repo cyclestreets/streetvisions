@@ -396,6 +396,16 @@ class streetvisions
 	# Show vision
 	public function visionshow ()
 	{
+		# Obtain the scheme moniker
+		$moniker = (isSet ($_GET['scheme']) ? $_GET['scheme'] : false);
+		
+		# Get the scheme
+		if (!$moniker || !$scheme = $this->schemesModel->getScheme ($moniker)) {
+			#!# Error handling needed
+		}
+		
+		# Send the scheme to the template
+		$this->template['scheme'] = $scheme;
 	}
 	
 	
