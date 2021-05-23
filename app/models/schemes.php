@@ -86,6 +86,9 @@ class schemesModel
 		unset ($scheme['createdAt']);
 		unset ($scheme['updatedAt']);
 		
+		#!# For now, set upvotes to random value, pending database implementation
+		$scheme['votes'] = strlen ($scheme['name']);
+		
 		# Return the scheme
 		return $scheme;
 	}
