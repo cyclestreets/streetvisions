@@ -208,8 +208,8 @@ var streetvisions = (function ($) {
 			// Segmented controls
 			streetvisions.segmentedControl ();
 			
-			// Add a map with the specified data
-			streetvisions.leafletMap (_settings.geojsonData);
+			// Add a map into the specified ID with the specified data
+			streetvisions.leafletMap ('leaflet', _settings.geojsonData);
 		},
 		
 		
@@ -235,10 +235,10 @@ var streetvisions = (function ($) {
 		
 		
 		// Leaflet map
-		leafletMap: function (geojsonData)
+		leafletMap: function (divId, geojsonData)
 		{
 			// Create a map
-			var map = L.map ('leaflet').setView ([_settings.defaultLatitude, _settings.defaultLongitude], _settings.defaultZoom);
+			var map = L.map (divId).setView ([_settings.defaultLatitude, _settings.defaultLongitude], _settings.defaultZoom);
 			
 			// Add tile background
 			L.tileLayer (_settings.tileUrl, {
