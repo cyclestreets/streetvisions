@@ -317,6 +317,9 @@ class streetvisions
 			#!# Error handling needed
 		}
 		
+		# Send the scheme to the template
+		$this->template['scheme'] = $scheme;
+		
 		# Create a form to add a vision
 		$form = new form (array (
 			'databaseConnection' => $this->databaseConnection,
