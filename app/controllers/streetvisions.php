@@ -195,7 +195,7 @@ class streetvisions
 			'database'		=> $this->settings['database'],
 			'table'			=> 'schemes',
 			'intelligence'	=> true,
-			'exclude'		=> array ('boundary', 'photo', 'private', 'deleted', 'username', 'person'),
+			'exclude'		=> array ('boundary', 'postcodeArea', 'photo', 'private', 'deleted', 'username', 'person'),
 			'attributes'	=> array (
 				'moniker'	=> array ('regexp' => '^([-a-z0-9]+)$', ),
 			),
@@ -336,6 +336,7 @@ class streetvisions
 				}
 			}
 		}
+		
 		$vision = $form->process ($formHtml);
 		$this->template['form'] = $formHtml;
 		

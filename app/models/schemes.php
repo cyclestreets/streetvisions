@@ -22,6 +22,7 @@ class schemesModel
 			  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Scheme name',
 			  `description` text COLLATE utf8mb4_unicode_ci NOT NULL COMMENT 'Description',
 			  `boundary` geometry NOT NULL COMMENT 'Boundary',
+			  `postcodeArea` VARCHAR(255) NOT NULL COMMENT 'Postcode area',
 			  `link` text COLLATE utf8mb4_unicode_ci COMMENT 'Link giving more info',
 			  `photo` int(11) DEFAULT NULL COMMENT 'Photo ID',
 			  `private` tinyint(1) DEFAULT NULL COMMENT 'Private?',
@@ -93,6 +94,11 @@ class schemesModel
 	# Add scheme
 	public function addScheme ($scheme, &$error = false)
 	{
+
+		# Add the postcode area
+		$boundary = json_decode ($scheme['boundary'], true);
+		$scheme['postcodeArea'] = $this->getPostcodeArea ($boundary['features'][0]['geometry']);
+		
 		# Handle geometries
 		$functionValues = array ('boundary' => $scheme['boundary']);
 		$scheme['boundary'] = "ST_GeomFromGeoJSON(:boundary)";
@@ -108,6 +114,113 @@ class schemesModel
 		
 		# Return the scheme moniker
 		return $scheme['moniker'];
+	}
+	
+	
+	# Function to convert a location to a postcode area
+	private function getPostcodeArea ($boundary)
+	{
+		# Get the centre
+		$centre = self::getCentre ($boundary);
+		
+		# Convert to postcode; see: https://postcodes.io/
+		#!# Needs a CycleStreets API
+		$url = "https://api.postcodes.io/postcodes?lon={$centre['lon']}&lat={$centre['lat']}";
+		$response = file_get_contents ($url);
+		$geocode = json_decode ($response, true);
+		$postcodeArea = $geocode['result'][0]['outcode'];
+		
+		# Return the result
+		return $postcodeArea;
+	}
+	
+	
+	# Helper function to get the centre-point of a geometry
+	#!# Copied from https://github.com/cyclestreets/streetfocus/blob/master/app/controllers/streetfocus.php#L488 - should be extracted to a library
+	public static function getCentre ($geometry, &$bbox = array ())
+	{
+		# Determine the centre point
+		switch ($geometry['type']) {
+			
+			case 'Point':
+				$centre = array (
+					'lat'	=> $geometry['coordinates'][1],
+					'lon'	=> $geometry['coordinates'][0]
+				);
+				$bbox = implode (',', array ($centre['lon'], $centre['lat'], $centre['lon'], $centre['lat']));
+				break;
+				
+			case 'LineString':
+				$longitudes = array ();
+				$latitudes = array ();
+				foreach ($geometry['coordinates'] as $lonLat) {
+					$longitudes[] = $lonLat[0];
+					$latitudes[] = $lonLat[1];
+				}
+				$centre = array (
+					'lat'	=> ((max ($latitudes) + min ($latitudes)) / 2),
+					'lon'	=> ((max ($longitudes) + min ($longitudes)) / 2)
+				);
+				$bbox = implode (',', array (min ($longitudes), min ($latitudes), max ($longitudes), max ($latitudes)));
+				break;
+				
+			case 'MultiLineString':
+			case 'Polygon':
+				$longitudes = array ();
+				$latitudes = array ();
+				foreach ($geometry['coordinates'] as $line) {
+					foreach ($line as $lonLat) {
+						$longitudes[] = $lonLat[0];
+						$latitudes[] = $lonLat[1];
+					}
+				}
+				$centre = array (
+					'lat'	=> ((max ($latitudes) + min ($latitudes)) / 2),
+					'lon'	=> ((max ($longitudes) + min ($longitudes)) / 2)
+				);
+				$bbox = implode (',', array (min ($longitudes), min ($latitudes), max ($longitudes), max ($latitudes)));
+				break;
+				
+			case 'MultiPolygon':
+				$longitudes = array ();
+				$latitudes = array ();
+				foreach ($geometry['coordinates'] as $polygon) {
+					foreach ($polygon as $line) {
+						foreach ($line as $lonLat) {
+							$longitudes[] = $lonLat[0];
+							$latitudes[] = $lonLat[1];
+						}
+					}
+				}
+				$centre = array (
+					'lat'	=> ((max ($latitudes) + min ($latitudes)) / 2),
+					'lon'	=> ((max ($longitudes) + min ($longitudes)) / 2)
+				);
+				$bbox = implode (',', array (min ($longitudes), min ($latitudes), max ($longitudes), max ($latitudes)));
+				break;
+				
+			case 'GeometryCollection':
+				$longitudes = array ();
+				$latitudes = array ();
+				foreach ($geometry['geometries'] as $geometryItem) {
+					$centroid = self::getCentre ($geometryItem, $bboxItem);	// Iterate
+					$longitudes[] = $centroid['lon'];
+					$latitudes[] = $centroid['lat'];
+				}
+				$centre = array (
+					'lat'	=> ((max ($latitudes) + min ($latitudes)) / 2),
+					'lon'	=> ((max ($longitudes) + min ($longitudes)) / 2)
+				);
+				$bbox = implode (',', array (min ($longitudes), min ($latitudes), max ($longitudes), max ($latitudes)));	// #!# Need to iterate BBOX items instead
+				break;
+		}
+		
+		# Reduce decimal places for output brevity
+		$centre['lon'] = (float) number_format ($centre['lon'], 6);
+		$centre['lat'] = (float) number_format ($centre['lat'], 6);
+		
+		# Return the centre
+		return $centre;
 	}
 }
 
