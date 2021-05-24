@@ -320,6 +320,9 @@ class streetvisions
 		# Send the scheme to the template
 		$this->template['scheme'] = $scheme;
 		
+		# Set the map data for the scheme
+		$this->settings['geojsonData'] = json_decode ($scheme['boundary']);
+		
 		# Create a form to add a vision
 		$form = new form (array (
 			'databaseConnection' => $this->databaseConnection,
