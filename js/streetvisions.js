@@ -581,6 +581,9 @@ var streetvisions = (function ($) {
 				revert: 'invalid',
 				stack: '#leaflet',
 				start: function (e, ui) {
+					// Once we start moving a marker, hide all popups
+					Tipped.hideAll();
+					
 					// Disable the help indicator as user has now dragged onto map
 					$('.leafletInstructions').addClass ('hidden');
 					
@@ -740,7 +743,7 @@ var streetvisions = (function ($) {
 				_leafletMarkers[markerKey].latLng = [marker._latlng.lat, marker._latlng.lng];
 				
 				// Create and display a popup
-				Tipped.create ('.' + id, htmlContent, {skin: 'light', hideOthers: true, hideOn: false, padding: '20px', size: 'huge', offset: { x: 30, y: 0 }});
+				Tipped.create ('.' + id, htmlContent, {skin: 'light', hideOthers: true, showOn: 'click', hideOn: false, padding: '20px', size: 'huge', offset: { x: 30, y: 0 }});
 				Tipped.show ('.' + id);
 
 				// Give focus to the input box
@@ -758,7 +761,13 @@ var streetvisions = (function ($) {
 						layer.remove();
 					}
 				});
+			});
 
+			// On escape, hide tooltips
+			$(document).on('keydown', function(event) {
+				if (event.key == "Escape") {
+					Tipped.hideAll()
+				}
 			});
 
 			// Hide deletion target on load
