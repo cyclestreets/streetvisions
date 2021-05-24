@@ -558,6 +558,11 @@ var streetvisions = (function ($) {
 				openSearchBox();
 			}, 1000);
 			
+			// Set grabbing cursor as soon as the object has been clicked on
+			$('.toolbox .group-contents ul li').mousedown (function (e) {
+				$(this).css ('cursor', 'grabbing');
+			});
+			
 			// Allow objects to be draggable onto the map
 			$('.toolbox .group-contents ul li').draggable ({
 				revert: 'invalid',
@@ -572,6 +577,9 @@ var streetvisions = (function ($) {
 					_draggedToolObject = _toolboxObjects.find ((o) => (o.type === tool));
 					_draggedToolObject.colour = $(this).css('background-color');
 					
+					// Set the cursor
+					$(this).css ('cursor', 'grabbing');
+					
 					// Add dragging style
 					$(this).animate ({'opacity': 0.5});
 					
@@ -581,6 +589,9 @@ var streetvisions = (function ($) {
 				stop: function () {
 					// Add dragging style
 					$(this).animate ({'opacity': 1});
+					
+					// Reset the cursor
+					$(this).css ('cursor', 'pointer');
 				}
 			});
 
