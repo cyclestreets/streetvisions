@@ -19,27 +19,29 @@
 		<section class="map">
 			<div class="map-header">
 				<a href="{$baseUrl}/{$scheme.moniker|htmlspecialchars}/"> <i class="back-arrow fa fa-chevron-circle-left"></i></a>
-				<h1>Scheme title here</h1>
+				<h1>{$scheme.name|htmlspecialchars}</h1>
 				<div class="likes">
-					<i class="fa fa-heart"></i><p>88</p>
+					<i class="fa fa-heart"></i><p>{$vision.likes}</p>
 				</div>
 				<hr />
-				<h2>Changes on Mill Road</h2>
-				<h3>Jordan Smith</h3>
-				<h4>Describing the parklet. Eum earum ad at suscipit omnis est. Quas voluptas quasi ab deserunt</h4>
+				<h2>{$vision.name|htmlspecialchars}</h2>
+				<h3>{$vision.person|htmlspecialchars}</h3>
+				<h4>{$vision.description|htmlspecialchars}</h4>
 			</div>
 			<div id="leaflet">
 			</div>
 			<div class="questions">
 				<h2><i class="fa fa-question-circle"></i> Q&A</h2>
-				<h4>How does your design ensure that people with disabilities are not disadvantaged</h4>
-				<p class="description">Proposal description. Eum earum ad at suscipit omnis est. Quas voluptas quasi ab deserunt</p>
+				{foreach $vision.questionnaire item=question}
+				<h4>{$question.question|htmlspecialchars}</h4>
+				<p class="description">{$question.answer|htmlspecialchars}</p>
+				{/foreach}
 			</div>
 		</section>
-
+		
 		<section class="discussion">
 			<a class="button button-general share"><i class="fa fa-share-square"></i> Share</a>
-			<h1>By Simon Nuttall</h1>
+			<h1>By {$vision.person|htmlspecialchars}</h1>
 			<hr>
 			<div class="discussion-content">
 				<h5>Join the community in discussing this vision. You can add a comment to an existing discussion, or start your own.</h5>

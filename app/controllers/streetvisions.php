@@ -404,8 +404,20 @@ class streetvisions
 			#!# Error handling needed
 		}
 		
-		# Send the scheme to the template
+		# Obtain the vision number
+		$visionId = (isSet ($_GET['vision']) ? $_GET['vision'] : false);
+		
+		# Get the scheme
+		if (!$visionId || !$vision = $this->visionsModel->getVision ($scheme['id'], $visionId)) {
+			#!# Error handling needed
+		}
+		
+		# Send the scheme and vision to the template
 		$this->template['scheme'] = $scheme;
+		$this->template['vision'] = $vision;
+		
+		# Set the map data
+		$this->settings['geojsonData'] = $vision['components'];
 	}
 	
 	

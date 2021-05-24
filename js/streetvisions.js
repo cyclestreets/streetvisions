@@ -204,7 +204,7 @@ var streetvisions = (function ($) {
 			streetvisions.initDiscussion ();
 
 			// Map
-			streetvisions.initLeaflet ('leaflet');
+			streetvisions.leafletMap ('leaflet', _settings.geojsonData);
 		},
 
 
@@ -238,7 +238,7 @@ var streetvisions = (function ($) {
 			
 			// Toolbox drawers
 			streetvisions.toolbox ();
-
+			
 			// Builder options
 			streetvisions.initBuilder ();
 		},
@@ -261,7 +261,7 @@ var streetvisions = (function ($) {
 			// Add the GeoJSON to the map
 			if (geojsonData) {
 				var feature = L.geoJSON (geojsonData).addTo (map);
-				map.fitBounds(feature.getBounds());
+				map.fitBounds (feature.getBounds());
 			}
 		},
 		
