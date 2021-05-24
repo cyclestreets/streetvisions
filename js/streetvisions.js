@@ -10,11 +10,11 @@ var streetvisions = (function ($) {
 	var _settings = {
 		
 		// CycleStreets API; obtain a key at https://www.cyclestreets.net/api/apply/
-		apiBaseUrl: 'https://api.cyclestreets.net',
-		apiKey: 'YOUR_API_KEY',
+		cyclestreetsApiBaseUrl: 'https://api.cyclestreets.net',
+		cyclestreetsApiKey: 'YOUR_API_KEY',
 
-		// Geocoder API URL; re-use of settings values represented as placeholders {%apiBaseUrl}, {%apiKey}, {%autocompleteBbox}, are supported
-		geocoderApiUrl: '{%apiBaseUrl}/v2/geocoder?key={%apiKey}&bounded=1&bbox={%autocompleteBbox}',
+		// Geocoder API URL; re-use of settings values represented as placeholders {%cyclestreetsApiBaseUrl}, {%cyclestreetsApiKey}, {%autocompleteBbox}, are supported
+		geocoderApiUrl: '{%cyclestreetsApiBaseUrl}/v2/geocoder?key={%cyclestreetsApiKey}&bounded=1&bbox={%autocompleteBbox}',
 		
 		// BBOX for autocomplete results biasing
 		autocompleteBbox: '-6.6577,49.9370,1.7797,57.6924',
@@ -501,8 +501,8 @@ var streetvisions = (function ($) {
 			// Add geocoder
 			var geocoder = function ()
 			{
-				// Geocoder URL; re-use of settings values is supported, represented as placeholders {%apiBaseUrl}, {%apiKey}, {%autocompleteBbox}
-				var geocoderApiUrl = streetvisions.settingsPlaceholderSubstitution (_settings.geocoderApiUrl, ['apiBaseUrl', 'apiKey', 'autocompleteBbox']);
+				// Geocoder URL; re-use of settings values is supported, represented as placeholders {%cyclestreetsApiBaseUrl}, {%cyclestreetsApiKey}, {%autocompleteBbox}
+				var geocoderApiUrl = streetvisions.settingsPlaceholderSubstitution (_settings.geocoderApiUrl, ['cyclestreetsApiBaseUrl', 'cyclestreetsApiKey', 'autocompleteBbox']);
 				
 				// Attach the autocomplete library behaviour to the location control
 				autocomplete.addTo ('.geocoder input', {

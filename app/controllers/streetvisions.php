@@ -123,7 +123,7 @@ class streetvisions
 		$this->template['applicationPath'] = $applicationPath;
 		
 		# Set the application JS settings
-		$jsSettingsFields = array ('defaultLatitude', 'defaultLongitude', 'defaultZoom', 'tileUrl', 'geojsonData');
+		$jsSettingsFields = array ('cyclestreetsApiBaseUrl', 'cyclestreetsApiKey', 'defaultLatitude', 'defaultLongitude', 'defaultZoom', 'tileUrl', 'geojsonData');
 		$jsSettings = application::arrayFields ($this->settings, $jsSettingsFields);
 		$this->template['settingsJs'] = json_encode ($jsSettings, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 		
