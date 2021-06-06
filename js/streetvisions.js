@@ -38,6 +38,31 @@ var streetvisions = (function ($) {
 	var _map; // Class property Leaflet map
 	var _leafletMarkers = []; // User-added map markers
 	
+	var _builderInputs = {
+		title: [
+			{
+				element: 'h2',
+				className: 'vision-title',
+				placeholder: ' Click to add a short vision title'
+			},
+			{
+				element: 'h4',
+				placeholder: ' Click to add a description of your vision',
+				className: 'vision-description'
+			}
+		],
+		questionnaire: {
+			questions: [
+				'How does your design ensure that people with disabilities are not disadvantaged?',
+				'What effects, if any, would your design have on any local businesses, e.g. on deliveries and customer access?',
+				'How does your design ensure that access to properties remains possible (even if through-traffic is not permitted)?'
+			],
+			questionPlaceholder: 'Click to add your answer',
+			titleElement: 'h4',
+			answerElement: 'p'
+		}
+	};
+	
 	// Definitions
 	var _toolboxObjects = [
 		{
@@ -243,6 +268,13 @@ var streetvisions = (function ($) {
 
 			// Map
 			streetvisions.leafletMap ('leaflet', _settings.geojsonData);
+
+			// Enable drag to hide panel on mobile
+			$('.pull-handle, .expand-handle').on('click', function () {
+				$('.header-content').slideToggle();
+				$('.expand-handle').toggle();
+				$('.map-header h1').toggle();
+			});
 		},
 
 
@@ -293,14 +325,15 @@ var streetvisions = (function ($) {
 			
 			// Add tile background
 			L.tileLayer (_settings.tileUrl, {
-				attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
+				attribution: '&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors',
+				id: 'mapbox/streets-v11'
 			}).addTo (_map);
 			
 			// Add a layer group to manage dropped tools
 			L.layerGroup().addTo (_map);
 			
 			// Add the GeoJSON to the map
-			if (geojsonData) {
+			if (geojsonData && Object.entries(geojsonData).length) {
 				var feature = L.geoJSON (geojsonData).addTo (_map);
 				_map.fitBounds (feature.getBounds());
 			}
@@ -364,11 +397,12 @@ var streetvisions = (function ($) {
 						toolboxOpen = ($('.toolbox-header').length == 0 ? 'toolbox-open' : '');
 						
 						// Build the HTML for the toolbox drawer
-						html = '';
-						html += `<div class="toolbox-header ${group} ${toolboxOpen}">`;
-						html += '<i class="fa fa-chevron-down"></i>';
-						html +=	`<h5>${toolboxPrettyName}</h5>`;
-						html += '<div class="group-contents"><ul></ul></div></div>';
+						html = `
+							<div class="toolbox-header ${group} ${toolboxOpen}">
+							<i class="fa fa-chevron-down"></i>
+							<h5>${toolboxPrettyName}</h5>
+							<div class="group-contents"><ul></ul></div></div>
+						`;
 						
 						// Add this to the toolbox 
 						$('div.toolbox').append(html);
@@ -378,9 +412,23 @@ var streetvisions = (function ($) {
 					var toolboxGroupUl = $('.toolbox .' + group + ' ul');
 					var style = (tool.hasOwnProperty('colour') ? tool.colour : getColourCSS (i, _toolboxObjects.length))
 					$(toolboxGroupUl).append (
-						`<li data-tool="${tool.type}" style="background-color: ${style}; color: white;"><i class="fa ${tool.icon}"></i><p>${tool.prettyName}</p></li>`
+						`<li data-tool="${tool.type}" class="tool tool-${tool.type}" style="background-color: ${style}; color: white;">
+							<i class="fa ${tool.icon}"></i>
+							<p>${tool.prettyName}</p>
+							<i class="info-icon info-${tool.type} fa fa-info-circle"></i>
+						</li>`
 					);
 				});
+			});
+
+			// Generate tooltips for these tools
+			var htmlContent = '';
+			_toolboxObjects.map (function (tool, i) {
+				htmlContent = `
+					<h1><i class="fa ${tool.icon}"></i> ${streetvisions.convertCamelCaseToSentence(tool.type)}</h1>
+					<p>${tool.description}</p>
+				`
+				Tipped.create (`.info-icon.info-${tool.type}`, htmlContent, {skin: 'light', hideOthers: true, padding: '20px', size: 'small',});
 			});
 
 			// Generate random colour for tools
@@ -507,13 +555,9 @@ var streetvisions = (function ($) {
 
 			// When clicking a tool, populate the help box
 			$('.toolbox .group-contents ul li').on ('click', function () {
+				
 				var toolType = $(this).data('tool');
-				if (!toolType) {
-					hideHelpCard();
-					return;
-				}
-				populateHelpCard (toolType);
-				openHelpCard ();
+				Tipped.show(`.info-icon.info-${toolType}`);
 			});
 		},
 
@@ -563,6 +607,13 @@ var streetvisions = (function ($) {
 			};
 			geocoder ();
 
+			// Enable drag to hide panel on mobile
+			$('.pull-handle, .expand-handle').on('click', function () {
+				$('.header-content').slideToggle();
+				$('.expand-handle').toggle();
+				$('.map-header h1').toggle();
+			});
+
 			// Enable search box
 			$('#browse-search-box').on('click', function () {
 				$(this).focus();
@@ -589,7 +640,7 @@ var streetvisions = (function ($) {
 			};
 			
 			var openSearchBox = function () {
-				$('.geocoder input').animate({'width': '300px'});
+				$('.geocoder input').animate({'width': '275px'});
 				$('#browse-search-box').focus();
 			};
 			setTimeout(function () {
@@ -605,9 +656,17 @@ var streetvisions = (function ($) {
 			$('.toolbox .group-contents ul li').draggable ({
 				revert: 'invalid',
 				stack: '#leaflet',
+				helper: 'clone',
 				start: function (e, ui) {
+					// Make sure cloned helper floats above other stuff
+					$('.ui-draggable').not(ui.helper.css('z-index', '9999')).css( 'z-index', '0');
+					
 					// Once we start moving a marker, hide all popups
 					Tipped.hideAll();
+
+					// Collapse any map info elements
+					$('#accordion').accordion('option', 'collapsible', true);
+					$('#accordion').accordion('option', 'active', false);
 					
 					// Disable the help indicator as user has now dragged onto map
 					$('.leafletInstructions').addClass ('hidden');
@@ -633,6 +692,9 @@ var streetvisions = (function ($) {
 					
 					// Reset the cursor
 					$(this).css ('cursor', 'pointer');
+
+					// Once we stop moving a marker, hide all popups
+					Tipped.hideAll();
 				}
 			});
 
@@ -889,11 +951,119 @@ var streetvisions = (function ($) {
 			$(document).on('click', '.exit-popup', function () {
 				Tipped.hideAll();
 			});
+
+			// Populate accordion with questions
+			var populateQuestions = function () {
+				$('.title').html(_builderInputs.title.map(
+					inputInfo => 
+						`<${inputInfo.element} class="untitled required ${inputInfo.className}" tabindex="0">${inputInfo.placeholder}</${inputInfo.element}>`
+					).join(''));
+
+				$('.questionnaire').html(_builderInputs.questionnaire.questions.map(
+					question => 
+						`<div class="question">
+							<${_builderInputs.questionnaire.titleElement}>${question}</${_builderInputs.questionnaire.titleElement}>
+							<${_builderInputs.questionnaire.answerElement} class="description untitled required" tabindex="0">${_builderInputs.questionnaire.questionPlaceholder}</${_builderInputs.questionnaire.answerElement}>
+						</div>`
+					).join(''));
+			};
+			populateQuestions();
+
+			// Enable vision info accordion
+			var icons = {
+				header: "fa fa-chevron-right",
+				activeHeader: "fa fa-chevron-down"
+			  };
+			$('#accordion').accordion({
+				active: false,
+				heightStyle: 'content',
+				icons: icons,
+				collapsible: true
+			});
+
+			// After initialising accordion, animate activating the first tab
+			setTimeout(() => {
+				$('#accordion').accordion('option', 'active', 0);
+				$('#accordion').accordion('option', 'collapsible', false);
+			}, 500);
 			
 			// When clicking on the title bar, make it editable
 			$('.builder .title h2, .builder .title h4, .builder p.description').on ('click', function (event){
 				makeContentEditable (event.target);
 				removeUntitledClass (event.target);
+			});
+
+			// When clicking the description field, expand it to indicate we weant more content
+			$('.vision-description').on('focus', function () {
+				// Only do this if we are in statu virginem
+				if ($('.vision-description').first().hasClass('untitled')) {
+					$('.vision-description').animate({'min-height': '60px'}, function () {
+						$('.vision-description').focus();
+					})
+				}
+			});
+
+			// After we have filled out a description, show the next accordion
+			$('.vision-description').on('blur', function () {
+				if (!$('.vision-description').first().hasClass('untitled')) {
+					$('#accordion').accordion('option', 'active', 1 );
+				}
+			});
+
+			// Functiont to check if all fields have been filled out
+			var allFieldsFilledOutBool = function () {
+				// Check if all fields have been filled out
+				var canPublish = true;
+				$.each($('.required'), function (indexInArray, textElement) {
+					if ($(textElement).hasClass('untitled')) {
+						canPublish = false;
+					}
+					if (!canPublish) {return;}
+				});
+
+				return canPublish
+			};
+
+			var checkIfSectionIsComplete = function () {
+				var titleComplete = true;
+				// For each of the title questions
+				_builderInputs.title.map(element => {
+					// For any elements matching this descriptor
+					if ($(`.${element.className}`).first().text() == element.placeholder) {
+						// Has not been completed
+						titleComplete = false;
+					}
+				})
+
+				if (titleComplete) {
+					$('.title-header i').removeClass();
+					$('.title-header i').addClass('fa fa-check complete animate__animated animate__heartBeat')
+				}
+
+				var questionnaireComplete = true;
+				$.each($(`.questionnaire ${_builderInputs.questionnaire.answerElement}`), function (indexInArray, input) {
+					if ($(input).text() == _builderInputs.questionnaire.questionPlaceholder) {
+						questionnaireComplete = false;
+					}
+				});
+
+				if (questionnaireComplete) {
+					$('.questionnaire-header i').removeClass();
+					$('.questionnaire-header i').addClass('fa fa-check complete animate__animated animate__heartBeat')
+				}
+			}
+
+			// Check to see if each section has been filled out
+			$('.untitled.required').on('keyup', function () {
+				checkIfSectionIsComplete();
+			});
+			
+			// If we have filled out all the fields, collapse all parts of the accordion
+			$('.description').on('blur', function () {
+				if (allFieldsFilledOutBool()) {
+					$('#accordion').accordion('option', 'collapsible', true);
+					$('#accordion').accordion('option', 'active', false);
+				}
 			});
 			
 			// Select and edit content
@@ -901,6 +1071,16 @@ var streetvisions = (function ($) {
 				$(target).attr ('contenteditable','true');
 				document.execCommand ('selectAll',false, null);
 			};
+			
+			// Tab our way through the fields
+			$(document).on('keyup', function(e) {
+				var code = e.keyCode || e.which;
+			
+				if (code === 9) {  // Tab key
+					e.preventDefault();
+					$('.required.untitled').first().focus();
+				}
+			});
 
 			// Remove untitled status
 			var removeUntitledClass = function (target) {
@@ -910,17 +1090,8 @@ var streetvisions = (function ($) {
 
 			// When clicking publish button, check if all fields have been filled in
 			$('.publish').on('click', function (event) {
-				// Check if all fields have been filled out
-				var canPublish = true;
-				$.each($('.required'), function (indexInArray, textElement) {
-					if ($(textElement).text().includes('Click to add')) {
-						canPublish = false;
-					}
-					if (!canPublish) {return;}
-				});
-
 				// If all fields aren't filled out, don't publish
-				if (!canPublish) {
+				if (!allFieldsFilledOutBool()) {
 					streetvisions.showModal ({
 						text: '<i class="fa fa-exclamation"></i> Oops...',
 						description: "It seems you haven't filled out all the information we need for this vision yet. Please check you have filled out the title, description, and FAQ questions."

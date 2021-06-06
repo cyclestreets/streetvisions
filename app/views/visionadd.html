@@ -1,4 +1,4 @@
-
+	
 	<!-- Leaflet-->
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
@@ -22,7 +22,7 @@
 		});
 	</script>
 
-	<section class="builder" method="post">
+	<section class="builder">
 		<div id="puff"></div>
 		<form id="visionForm">
 			<input type="text" id="name" name="name" value="">
@@ -32,15 +32,21 @@
 		</form>
 		<section class="map">
 			<div class="map-header">
+				<i class="expand-handle fa fa-chevron-down"></i>
 				<a href="{$baseUrl}/{$scheme.moniker|htmlspecialchars}/"> <i class="back-arrow fa fa-chevron-circle-left"></i></a>
 				<h1>Changes on Mill Road</h1>
 				<button type="submit" class="button button-general publish" form="visionForm">Publish <i class="fa fa-upload"></i></button>
-				
-				<hr />
-				<div class="title">
-					<h2 class="untitled required"> Click to add vision title</h2>
-					<h3>Jordan Smith</h3>
-					<h4 class="untitled required"> Click to add vision description</h4>
+				<div class="header-content">
+					<hr />
+					<div id="accordion">
+						<h3 class="title-header"> Give your vision a name and a description <i class="fa fa-exclamation-triangle"></i> </h3>
+						<div class="title">
+						</div>
+						<h3 class="questionnaire-header"> Answer some questions about your vision <i class="fa fa-exclamation-triangle"></i></h3>
+						<div class="questionnaire">
+						</div>
+					</div>
+					<i class="pull-handle fa fa-chevron-up"></i>
 				</div>
 			</div>
 			<div id="leaflet">
@@ -61,24 +67,6 @@
 					</div>
 				</div>
 			</div>
-			<div class="questions">
-				
-				<h2><i class="fa fa-question-circle"></i> Q&A</h2>
-				<div class="question">
-					<h4>How does your design ensure that people with disabilities are not disadvantaged?</h4>
-					<p class="description untitled required">Click to add your answer</p>
-				</div>
-				
-				<div class="question">
-					<h4>What effects, if any would your design have on any local businesses, e.g. on deliveries and customer access?</h4>
-					<p class="description untitled required">Click to add your answer</p>
-				</div>
-			
-				<div class="question">
-					<h4>How does your design ensure that access to properties remains possible (even if through-traffic is not permitted)?</h4>
-					<p class="description untitled required">Click to add your answer</p>
-				</div>
-			</div>
 		</section>
 
 		<section class="toolbox">
@@ -88,12 +76,6 @@
 			<div class="padded-content">
 				<div class="toolbox">
 				</div>
-			</div>
-
-			<div class="toolbox-card">
-				<i class="close-card fa fa-times-circle"></i>
-				<i class="icon fa fa-plus"></i><h1>Parklet</h1>
-				<p>A parklet is a sidewalk extension that provides more space and amenities for people using the street. Usually parklets are installed on parking lanes and use several parking spaces. Parklets typically extend out from the sidewalk at the level of the sidewalk to the width of the adjacent parking space.</p>
 			</div>
 		</section>
 		
