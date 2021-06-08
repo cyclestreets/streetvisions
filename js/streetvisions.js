@@ -43,7 +43,7 @@ var streetvisions = (function ($) {
 			{
 				element: 'input',
 				className: 'vision-title',
-				placeholder: 'Name and describe your vision'
+				placeholder: 'Name your vision'
 			},
 			{
 				element: 'textarea',
