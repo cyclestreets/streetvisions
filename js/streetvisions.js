@@ -798,7 +798,7 @@ var streetvisions = (function ($) {
 			
 			var openSearchBox = function () {
 				$('.geocoder input').animate({'width': '275px'});
-				$('#browse-search-box').focus();
+				//$('#browse-search-box').focus();
 			};
 			setTimeout(function () {
 				openSearchBox();
@@ -1145,6 +1145,11 @@ var streetvisions = (function ($) {
 				$('#accordion').accordion('option', 'active', 0);	
 				$('#accordion').accordion('option', 'collapsible', false);	
 			}, 500);
+			
+			// Put focus in first box when an accordion panel is opened
+			$('#accordion').on ('accordionactivate', function (event, ui) {
+				$(ui.newPanel).find ('input')[0].focus ();
+			});
 			
 			// When clicking on the title bar, make it editable
 			$('.builder .title input, .builder .title textarea, .builder input.description').on ('click', function (event){
