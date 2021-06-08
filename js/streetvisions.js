@@ -1168,8 +1168,10 @@ var streetvisions = (function ($) {
 
 			// After we have filled out a description, show the next accordion
 			$('.vision-description').on('blur', function () {
-				if (!$('.vision-description').first().hasClass('untitled')) {
-					$('#accordion').accordion('option', 'active', 1 );
+				if ($('.vision-description').val ()) {		// Only if it now has a value
+					if (!$('.vision-description').first().hasClass('untitled')) {
+						$('#accordion').accordion('option', 'active', 1 );
+					}
 				}
 			});
 
