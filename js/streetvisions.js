@@ -354,8 +354,27 @@ var streetvisions = (function ($) {
 			// Set initial value (empty GeoJSON)
 			updateDrawInputValue ();
 			
-			// Auto-activate the polygon drawing; see: https://stackoverflow.com/questions/15775103/
-			new L.Draw.Polygon (_map, drawControl.options.polygon).enable ();
+			// Function to enable the polygon drawing control; see: https://stackoverflow.com/questions/15775103/
+			var enableDrawingControl = function () {
+				new L.Draw.Polygon (_map, drawControl.options.polygon).enable ();
+			};
+			
+			// Ensure minimum zoom level
+			$(map).click (function () {
+				var requireZoom = 16;
+				var currentZoom = _map.getZoom ();
+				if (currentZoom < requireZoom) {
+					var newZoom = Math.min (requireZoom, (currentZoom + 2));
+					_map.setZoom (newZoom);
+					if (newZoom >= requireZoom) {
+						enableDrawingControl ();
+						$(map).off ('click');
+					}
+				} else {
+					enableDrawingControl ();
+					$(map).off ('click');
+				}
+			});
 			
 			// Process the result; see: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw
 			_map.on ('draw:created', function (e) {
