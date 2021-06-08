@@ -809,6 +809,11 @@ var streetvisions = (function ($) {
 				$(this).css ('cursor', 'grabbing');
 			});
 			
+			// Disable the help indicator if the user explicitly clicks on the map
+			$('.leafletInstructions').click (function () {
+				$('.leafletInstructions').addClass ('hidden');
+			});
+			
 			// Allow objects to be draggable onto the map
 			$('.toolbox .group-contents ul li').draggable ({
 				revert: 'invalid',
