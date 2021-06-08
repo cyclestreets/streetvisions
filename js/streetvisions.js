@@ -298,11 +298,20 @@ var streetvisions = (function ($) {
 			// Initialise map
 			streetvisions.leafletMap ('map');
 			
+			// Enable drawing
+			streetvisions.enableDrawing ();
+		},
+		
+		
+		// Drawing
+		enableDrawing: function ()
+		{
 			// FeatureGroup is to store editable layers
 			var editableLayers = new L.FeatureGroup ();
 			_map.addLayer (editableLayers);
 			
-			var drawControl = new L.Control.Draw({
+			// Define a drawing control
+			var drawControl = new L.Control.Draw ({
 				position: 'topright',
 				edit: {
 					featureGroup: editableLayers
