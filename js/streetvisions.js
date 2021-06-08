@@ -299,21 +299,79 @@ var streetvisions = (function ($) {
 			streetvisions.leafletMap ('map');
 			
 			// FeatureGroup is to store editable layers
-			var drawnItems = new L.FeatureGroup();
-			_map.addLayer(drawnItems);
+			var editableLayers = new L.FeatureGroup ();
+			_map.addLayer (editableLayers);
+			
 			var drawControl = new L.Control.Draw({
 				position: 'topright',
 				edit: {
-					featureGroup: drawnItems
+					featureGroup: editableLayers
 				},
 				draw: {
 					polyline: false,
 					circle: false,
+					circlemarker: false,
 					rectangle: false,
 					marker: false
 				}
 			});
-			_map.addControl(drawControl);
+			
+			// Remove the confirmation step for the delete button; see: https://stackoverflow.com/questions/21125543/
+			L.EditToolbar.Delete.include ({
+				enable: function () {
+					this.options.featureGroup.clearLayers ();
+				}
+			});
+			
+			// Add the control
+			_map.addControl (drawControl);
+			
+			// Helper sub-function to clear existing data
+			var clearExisting = function () {
+				editableLayers.eachLayer (function (layer) {
+					editableLayers.removeLayer (layer);
+				});
+			}
+			
+			// Helper sub-function to update the value
+			var updateDrawInputValue = function () {
+				var data = editableLayers.toGeoJSON ();
+				data = JSON.stringify (data);
+				$('#form_boundary').val (data);
+			};
+			
+			// Set initial value (empty GeoJSON)
+			updateDrawInputValue ();
+			
+			// Auto-activate the polygon drawing; see: https://stackoverflow.com/questions/15775103/
+			new L.Draw.Polygon (_map, drawControl.options.polygon).enable ();
+			
+			// Process the result; see: https://leaflet.github.io/Leaflet.draw/docs/leaflet-draw-latest.html#l-draw
+			_map.on ('draw:created', function (e) {
+				editableLayers.addLayer (e.layer);
+				updateDrawInputValue ();
+			});
+			
+			// Process the result
+			_map.on ('draw:edited', function (e) {
+				clearExisting ();
+				e.layers.eachLayer (function (layer) {
+					editableLayers.addLayer (layer);
+				});
+				updateDrawInputValue ();
+			});
+			
+			// Clear existing on draw start
+			_map.on ('draw:drawstart', function (e) {
+				clearExisting ();
+				updateDrawInputValue ();
+			});
+			
+			// Clear on Deletion
+			_map.on ('draw:deleted', function (e) {
+				clearExisting ();
+				updateDrawInputValue ();
+			});
 		},
 		
 		

@@ -68,60 +68,50 @@
                     </script>
 
 
-                    <form id="ultimateForm" method="post" name="form" action="{$baseUrl}/add.html"
-                        enctype="application/x-www-form-urlencoded" accept-charset="UTF-8">
-
+                    <form id="ultimateForm" method="post" name="form" action="{$baseUrl}/add.html" enctype="application/x-www-form-urlencoded" accept-charset="UTF-8">
+						
                         <table summary="Online submission form">
                             <tr class="name input required">
                                 <td class="title">Scheme name:&nbsp;*</td>
-                                <td class="data"><input name="form[name]" id="form_name" type="text" size="40"
-                                        maxlength="255" required="required" value="" autofocus="autofocus" /></td>
+                                <td class="data"><input name="form[name]" id="form_name" type="text" size="40" maxlength="255" required="required" value="" autofocus="autofocus" /></td>
                             </tr>
                             <tr class="moniker input required">
                                 <td class="title">URL moniker:&nbsp;*</td>
-                                <td class="data">https://www.widenmypath.com/schemes/ <input name="form[moniker]" id="form_moniker" type="text" size="20"
-                                        maxlength="20" required="required" value="" style="width: auto;" /> /</td>
+                                <td class="data">https://www.widenmypath.com/schemes/ <input name="form[moniker]" id="form_moniker" type="text" size="20" maxlength="20" required="required" value="" style="width: auto;" /> /</td>
                             </tr>
                             <tr class="description textarea required">
                                 <td class="title">Description:&nbsp;*</td>
-                                <td class="data"><textarea name="form[description]" id="form_description" cols="30"
-                                        rows="5" required="required"></textarea></td>
+                                <td class="data"><textarea name="form[description]" id="form_description" cols="30" rows="5" required="required"></textarea></td>
                             </tr>
                             <tr class="link textarea">
                                 <td class="title">Link giving more info:</td>
-                                <td class="data"><input type="url" name="form[link]" id="form_link" cols="30"
-                                        rows="5"></textarea>
+                                <td class="data"><input type="url" name="form[link]" id="form_link" cols="30" rows="5"></textarea>
                                 </td>
                             </tr>
                             <tr class="boundary textarea required">
-                                <td class="title">Scheme boundary (GeoJSON map data):&nbsp;*<br /><br />For now, use <a href="https://geojson.io/#map=14/52.1988/0.1375" target="_blank">geojson.io</a><br />to create the boundary data.</p></td>
-                                <td class="data"><textarea name="form[boundary]" id="form_boundary" cols="30" rows="9"
-                                        required="required"></textarea>
-								<div id="map" style="height: 200px;"></div>
-<br />
-<br />
-</td>
+                                <td class="title">Where do you want to improve? Draw out the area:&nbsp;*</td>
+                                <td class="data">
+									<div id="map" style="height: 200px;"></div>
+									<input type="hidden" name="form[boundary]" id="form_boundary" required="required" />
+									<br />
+									<br />
+								</td>
                             </tr>
                             <tr class="username input required">
                                 <td class="title">CycleStreets username/e-mail:&nbsp;*</td>
-                                <td class="data"><input name="form[username]" id="form_username" type="text" size="30"
-                                        required="required" value="" /></td>
+                                <td class="data"><input name="form[username]" id="form_username" type="text" size="30" required="required" value="" /></td>
                             </tr>
                             <tr class="password password required">
                                 <td class="title">CycleStreets password:&nbsp;*</td>
-                                <td class="data"><input name="form[password]" id="form_password" type="password"
-                                        size="30" required="required" value="" /></td>
+                                <td class="data"><input name="form[password]" id="form_password" type="password" size="30" required="required" value="" /></td>
                             </tr>
                         </table>
-
-
-                        <p class="submit"><input type="submit" value="Submit!" accesskey="s"
-                                class="button button-general" /></p>
+						
+                        <p class="submit"><input type="submit" value="Submit!" accesskey="s" class="button button-general" /></p>
 
                     </form>
-                    <p class="requiredmessage"><strong>*</strong> Items marked with an asterisk [*] are required fields
-                        and
-                        must be fully completed.</p>
+                    <p class="requiredmessage"><strong>*</strong> Items marked with an asterisk [*] are required fields and must be fully completed.</p>
+
                 </div>
             </div>
         </section>
