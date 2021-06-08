@@ -325,16 +325,6 @@ var streetvisions = (function ($) {
 				}
 			});
 			
-			// Remove the confirmation step for the delete button; see: https://stackoverflow.com/questions/21125543/
-			L.EditToolbar.Delete.include ({
-				enable: function () {
-					this.options.featureGroup.clearLayers ();
-				}
-			});
-			
-			// Add the control
-			_map.addControl (drawControl);
-			
 			// Helper sub-function to clear existing data
 			var clearExisting = function () {
 				editableLayers.eachLayer (function (layer) {
@@ -348,6 +338,18 @@ var streetvisions = (function ($) {
 				data = JSON.stringify (data);
 				$('#form_boundary').val (data);
 			};
+			
+			// Clear on deletion, immediately on using the button; see: https://stackoverflow.com/questions/21125543/
+			L.EditToolbar.Delete.include ({
+				enable: function () {
+					this.options.featureGroup.clearLayers ();
+					clearExisting ();
+					updateDrawInputValue ();
+				}
+			});
+			
+			// Add the control
+			_map.addControl (drawControl);
 			
 			// Set initial value (empty GeoJSON)
 			updateDrawInputValue ();
@@ -372,12 +374,6 @@ var streetvisions = (function ($) {
 			
 			// Clear existing on draw start
 			_map.on ('draw:drawstart', function (e) {
-				clearExisting ();
-				updateDrawInputValue ();
-			});
-			
-			// Clear on Deletion
-			_map.on ('draw:deleted', function (e) {
 				clearExisting ();
 				updateDrawInputValue ();
 			});
