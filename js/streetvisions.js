@@ -128,6 +128,15 @@ var streetvisions = (function ($) {
 			colour: '#3D6B94'
 		},
 		{
+			type: 'slowerSpeeds',
+			description: 'Lowered speed limit.',
+			images: [
+			],
+			groups: 'driving',
+			icon: 'fa-car',
+			colour: 'gray'
+		},
+		{
 			type: 'deliveryBay', 
 			description: 'A delivery bay is a space where delivery vehicles can temporarily park while engaging in deliveries, without blocking the pavement.',
 			images: [
