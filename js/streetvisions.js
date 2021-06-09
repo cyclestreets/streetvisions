@@ -445,6 +445,7 @@ var streetvisions = (function ($) {
 		},
 		
 		
+		// Add vision
 		visionadd: function ()
 		{
 			// Init modal
@@ -466,6 +467,9 @@ var streetvisions = (function ($) {
 			
 			// Builder options
 			streetvisions.initBuilder ();
+			
+			// Contextual data
+			streetvisions.contextualData ();
 		},
 		
 		
@@ -1379,6 +1383,101 @@ var streetvisions = (function ($) {
 					$(this).toggle ($(this).text ().toLowerCase ().indexOf (value) > -1);
 				});
 			});
+		},
+		
+		
+		// Contextual data (e.g. cycle parking, speed limits)
+		contextualData: function ()
+		{
+			// Define the layers and their API calls
+			var layers = {
+				cycleparking: _settings.cyclestreetsApiBaseUrl + '/v2/pois.locations?type=cycleparking&fields=id,name,osmTags[capacity,access,bicycle_parking,covered],nodeId',
+				speedlimits: '/libraries/streetvisions/images/speedlimits.geojson',
+			};
+			
+			// End if not present
+			$('#contextualdata input').change (function (e) {
+				
+				var geojsonLayer;
+				if (this.checked) {
+					
+					// Determine the data URL
+					var layer = this.name;
+					var url = layers[layer];
+					
+					// Get the data
+					$.ajax ({
+						type: 'GET',
+						url: url,
+						dataType: 'json',
+						data: {
+							key: _settings.cyclestreetsApiKey,
+							bbox: _map.getBounds ().toBBoxString ()
+						},
+						success: function (data) {
+							geojsonLayer = L.geoJson (data, {
+								
+								// Set icon
+								pointToLayer: function (feature, latlng) {
+									var markerProperties = {
+										icon: L.icon ({
+											iconUrl: feature.properties.iconUrl,
+											iconSize: 20
+										})
+									};
+									var icon = L.marker (latlng, markerProperties);
+									return icon;
+								},
+								
+								// Set popup
+								onEachFeature: function (feature, layer) {
+									var popupContent = streetvisions.htmlTable (feature.properties)
+									layer.bindPopup (popupContent);
+								},
+								
+								// Lines
+								style: function (feature) {
+									return {
+										color:   (feature.properties.maxspeed < 50 ? 'green' : 'red'),
+										weight:  (feature.properties.maxspeed < 50 ? 2 : 4),
+										opacity: (feature.properties.maxspeed < 50 ? 0.5 : 1),
+									}
+								}
+								
+							}).addTo (_map);
+						}
+					});
+					
+				} else {
+					_map.removeLayer (geojsonLayer);
+				}
+			});
+		},
+		
+		
+		// Function to create a table from key,value pairs
+		htmlTable: function (data)
+		{
+			// Construct the table
+			var html = '<table>';
+			$.each (data, function (key, value) {
+				if (key == 'iconUrl') {return /* i.e. continue */;}
+				key   = streetvisions.htmlentities (key);
+				value = streetvisions.htmlentities (value);
+				html += '<tr><td>' + key + ':</td><td><strong>' + value + '</strong></td></tr>';
+			});
+			html += '</table>';
+			
+			// Return the HTML
+			return html;
+		},
+		
+		
+		// Function to escape entities in a string
+		htmlentities: function (value)
+		{
+			if (typeof value != 'string') {return value;}
+			return value.replace (/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 		}
 	};
 	
