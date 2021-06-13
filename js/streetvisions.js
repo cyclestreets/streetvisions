@@ -315,7 +315,7 @@ var streetvisions = (function ($) {
 			
 			// Initialise map for each scheme
 			$.each (_settings.geojsonData, function (mapId, boundary) {
-				streetvisions.leafletMap (mapId, boundary);
+				streetvisions.leafletMap (mapId, boundary, true);
 			});
 		},
 		
@@ -427,6 +427,7 @@ var streetvisions = (function ($) {
 		},
 		
 		
+		// Show vision
 		visionshow: function ()
 		{
 			// Segmented controls
@@ -434,10 +435,10 @@ var streetvisions = (function ($) {
 			
 			// Discussion
 			streetvisions.initDiscussion ();
-
+			
 			// Map
 			streetvisions.leafletMap ('leaflet', _settings.geojsonData);
-
+			
 			// Enable drag to hide panel on mobile
 			$('.pull-handle, .expand-handle').on('click', function () {
 				$('.header-content').slideToggle();
@@ -445,8 +446,9 @@ var streetvisions = (function ($) {
 				$('.map-header h1').toggle();
 			});
 		},
-
-
+		
+		
+		// Show scheme
 		schemeshow: function ()
 		{
 			// Segmented controls
@@ -467,7 +469,7 @@ var streetvisions = (function ($) {
 			
 			// Initialise map for each scheme
 			$.each (_settings.geojsonData.visions, function (mapId, boundary) {
-				streetvisions.leafletMap (mapId, boundary);
+				streetvisions.leafletMap (mapId, boundary, true);
 			});
 
 		},
@@ -502,7 +504,7 @@ var streetvisions = (function ($) {
 		
 		
 		// Leaflet map
-		leafletMap: function (divId, geojsonData)
+		leafletMap: function (divId, geojsonData, disableInteractivity)
 		{
 			// Create a map
 			_map = L.map (divId).setView ([_settings.defaultLatitude, _settings.defaultLongitude], _settings.defaultZoom);
@@ -520,6 +522,13 @@ var streetvisions = (function ($) {
 			if (geojsonData && Object.entries(geojsonData).length) {
 				var feature = L.geoJSON (geojsonData).addTo (_map);
 				_map.fitBounds (feature.getBounds());
+			}
+			
+			// Disable interactivity if required
+			if (disableInteractivity) {
+				_map._handlers.forEach (function (handler) {
+					handler.disable ();
+				});
 			}
 		},
 		
