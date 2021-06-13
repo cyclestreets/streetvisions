@@ -258,11 +258,11 @@ section.builder section.toolbox .padded-content {padding: 0 25px 25px 20px;}
 section.builder section.toolbox .padded-content h3 {margin: 0;}
 section.builder section.toolbox .toolbox-header>i {transition: .5s; cursor: pointer;}
 section.builder section.toolbox .toolbox-header>i.rotated {transform: rotate(-90deg);}
-section.builder section.toolbox .toolbox-header h3 {display: inline-block; margin: 10px 7.5px; padding: 5px; border-radius: 10px;}
+section.builder section.toolbox .toolbox-header h3 {display: inline-block; margin: 10px 7.5px 10px -3px; padding: 5px; border-radius: 10px;}
 section.builder section.toolbox .toolbox-header h3:hover {background-color: #eee;}
 section.builder section.toolbox .toolbox-header .group-contents {margin: 0 15px; padding: 0; font-size: 17px;}
 section.builder section.toolbox .toolbox-header .group-contents ul i.info-icon {float: right; position: relative; top: 0; right: 0; font-size: 17px;}
-section.builder section.toolbox .toolbox-header .group-contents ul {list-style: none; padding: 0; display: flex; align-items: center; flex-wrap: wrap;}
+section.builder section.toolbox .toolbox-header .group-contents ul {list-style: none; padding: 0; display: flex; align-items: center; flex-wrap: wrap; margin-top: 0;}
 section.builder section.toolbox .toolbox-header .group-contents ul li {border-radius: .7em; display: inline-block; padding: 10px; margin: 5px; cursor: pointer; width: 100px; height: 90px; box-shadow: 0 2px 5px 0 rgba(0,0,0,0.16),0 2px 10px 0 rgba(0,0,0,0.12); transition: box-shadow .25s;}
 section.builder section.toolbox .toolbox-header .group-contents ul li:hover {box-shadow: 0 8px 17px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19); color: #4d0026;}
 section.builder section.toolbox .toolbox-header .group-contents ul li i {font-size: 50px; display: block; margin: 0 auto; text-align: center;}
