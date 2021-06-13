@@ -300,16 +300,6 @@ var streetvisions = (function ($) {
 			// Segmented controls
 			streetvisions.segmentedControl ();
 
-			// Enable filtering options on scroll
-			$(document).scroll(function() {
-				var y = $(this).scrollTop();
-				if (y > 200) {
-					$('.segmented-control').fadeIn();
-				} else {
-					$('.segmented-control').fadeOut();
-				}
-			});
-			
 			// Search
 			streetvisions.initSearch ();
 			
