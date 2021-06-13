@@ -554,7 +554,7 @@ var streetvisions = (function ($) {
 				// Iterate through the groups
 				groups.map (function (group) {
 					toolboxGroup = $('.toolbox .' + group);
-					toolboxPrettyName = streetvisions.capitalizeFirstLetter (group);
+					toolboxPrettyName = streetvisions.convertCamelCaseToSentence (group);
 					
 					// If there is no toolbox-header for this group, add it. 
 					if (toolboxGroup.length === 0) {
