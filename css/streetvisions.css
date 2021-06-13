@@ -394,7 +394,7 @@ section.schemes-list .card .content {padding: 5px 15px 15px 15px; text-align: le
 section.schemes-list .card .content .likes {float: right;}
 section.schemes-list .card .content .likes i {color: #f2bd54; padding-right: 5px;}
 section.schemes-list .card .content .likes p {color: black; display: inline-block; margin: 5px 0 0 0;}
-section.schemes-list .card .content h4 {font-size: 25px; margin: 60px 0 5px 0;}
+section.schemes-list .card .content h4 {font-size: 25px; margin: 60px 0 7px 0; line-height: 27px;}
 section.schemes-list .card .content h5 {font-size: 17px; margin: 0 0 4px 0;}
 section.schemes-list .card .content p {font-size: 15px;}
 section.schemes-list .card .title {margin-top: 0px; font-weight: 700; font-size: 1.65em;}
