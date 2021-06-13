@@ -250,6 +250,12 @@ var streetvisions = (function ($) {
 			colour: '#B13110'
 		}
 	];
+	var _toolboxGroupEmoji = {
+		cycling: '&#128690;',
+		walking: '&#128694;',
+		driving: '&#128663;',
+		publicSpace: '&#127795;',
+	};
 
 	
 	return {
@@ -552,6 +558,7 @@ var streetvisions = (function ($) {
 				var groups = (!Array.isArray (tool.groups) ? [tool.groups] : tool.groups);
 				
 				// Iterate through the groups
+				var emoji;
 				groups.map (function (group) {
 					toolboxGroup = $('.toolbox .' + group);
 					toolboxPrettyName = streetvisions.convertCamelCaseToSentence (group);
@@ -561,11 +568,14 @@ var streetvisions = (function ($) {
 						// If this is the first toolbox group, have it open by default
 						toolboxOpen = ($('.toolbox-header').length == 0 ? 'toolbox-open' : '');
 						
+						// Determine the emoji to use for this group
+						emoji = _toolboxGroupEmoji[group];
+						
 						// Build the HTML for the toolbox drawer
 						html = `
 							<div class="toolbox-header ${group} ${toolboxOpen}">
 							<i class="fa fa-chevron-down"></i>
-							<h3>${toolboxPrettyName}</h3>
+							<h3>${toolboxPrettyName} ${emoji}</h3>
 							<div class="group-contents"><ul></ul></div></div>
 						`;
 						
