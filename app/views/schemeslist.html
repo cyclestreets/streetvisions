@@ -68,6 +68,7 @@
 				{foreach from=$schemes item=scheme}
                 <li>
                     <div class="card">
+						<a href="{$baseUrl}/{$scheme.moniker|htmlspecialchars}/">
                         <div class="card-image">
                             <div id="map{$scheme.id}" class="map">
                         </div>
@@ -82,6 +83,7 @@
                             <h5>{$scheme.person|htmlspecialchars}</h5>
                             <p>{$scheme.description|htmlspecialchars}</p>
                         </div>
+						</a>
                         <div class="read-more">
                             <a href="{$baseUrl}/{$scheme.moniker|htmlspecialchars}/">View scheme <i class="fa fa-chevron-right"></i></a>
                         </div>

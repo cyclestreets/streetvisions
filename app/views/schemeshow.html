@@ -82,6 +82,7 @@
 				{foreach from=$visions item=vision}
 				<li>
 					<div class="library_card">
+						<a href="{$baseUrl}/{$scheme.moniker}/vision{$vision.visionId}/">
 						<div class="card-image">
 							<div id="map{$vision.visionId}" class="map"></div>
 						</div>
@@ -93,6 +94,7 @@
 							<h5>{$vision.person|htmlspecialchars}</h5>
 							<p>{$vision.description|htmlspecialchars}</p>
 						</div>
+						</a>
 						<div class="read-more">
 							<div class="comment-count">
 								<i class="fa fa-comments"></i><p>{$vision.comments}</p>
