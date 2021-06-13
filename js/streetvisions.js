@@ -920,7 +920,7 @@ var streetvisions = (function ($) {
 				return (
 					(point.x >= (0 + padding)) &&
 					(point.x <= (size.x - padding)) &&
-					(point.y >= (0 + padding + 40)) &&		/* Extra amount to take into account icon height as drag upwards /*
+					(point.y >= (0 + padding + 40)) &&		/* Extra amount to take into account icon height as drag upwards */
 					(point.y <= (size.y - padding))
 				);
 			};
