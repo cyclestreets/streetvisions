@@ -908,14 +908,19 @@ var streetvisions = (function ($) {
 				});
 			};
 
-			// Check the bounds of a leaflet marker, return bool in/out box
-			var checkBounds = function (marker, northEast, southWest) {
-    			var bounds = new L.LatLngBounds(
-					new L.LatLng(northEast[0], northEast[1]),
-					new L.LatLng(southWest[0], southWest[1])
+			// Check the bounds of a marker, return bool in/out box
+			var checkBounds = function (marker) {
+				
+				// Get the map bounds
+				var bounds = _map.getBounds ();
+    			var paddedBounds = new L.LatLngBounds (
+					new L.LatLng ((bounds.getNorth () - 0.001), (bounds.getEast () - 0.001)),
+					new L.LatLng ((bounds.getSouth () + 0.001), (bounds.getWest () + 0.001))
 				);
-				var markerPosition = marker.getLatLng();
-				return bounds.contains(new L.LatLng(markerPosition.lat, markerPosition.lng));
+				
+				// Check against the bounds
+				var markerPosition = marker.getLatLng ();
+				return paddedBounds.contains (new L.LatLng (markerPosition.lat, markerPosition.lng));
 			};
 			
 			// On drop on map, create an icon
@@ -947,14 +952,9 @@ var streetvisions = (function ($) {
 					// Show the delete target
 					$('.deleteTarget').show();
 
-					// If we are dragging the icon to near the border of the map, delete it
-					// Get the map bounds
-					var bounds = _map.getBounds();
-					var northEast = [bounds._northEast.lat-0.001, bounds._northEast.lng-0.001];
-					var southWest = [bounds._southWest.lat+0.001, bounds._southWest.lng+0.001];
-					
-					// Check if the marker is outside those bounds
-					if (!checkBounds (marker, northEast, southWest)) {
+					// If we are dragging the icon to near the border of the map, delete it, by checking if the marker is outside those bounds
+					if (!checkBounds (marker)) {
+						
 						// Get the offset of the icon, to send to the puff delete animation
 						var offset = getOffset(marker._icon);
 						
