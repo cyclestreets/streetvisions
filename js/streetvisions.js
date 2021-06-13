@@ -565,7 +565,7 @@ var streetvisions = (function ($) {
 						html = `
 							<div class="toolbox-header ${group} ${toolboxOpen}">
 							<i class="fa fa-chevron-down"></i>
-							<h5>${toolboxPrettyName}</h5>
+							<h3>${toolboxPrettyName}</h3>
 							<div class="group-contents"><ul></ul></div></div>
 						`;
 						
