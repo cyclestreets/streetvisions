@@ -924,24 +924,8 @@ var streetvisions = (function ($) {
 			});
 			
 			// Template for the FontAwesome icon to drop onto map
-			var fontAwesomeIcon = function () {
-				// Get icon of tool that is currently being dragged
-				var icon = _draggedToolObject.icon;
-				var colour = _draggedToolObject.colour;
-
-				return L.divIcon({
-					html: `
-					<span class="fa-stack fa-2x">
-  						<i class="fas fa-map-marker fa-stack-2x" style="color: ${colour}"></i>
-  						<i class="fa ${icon} fa-stack-1x" style="color: white"></i>
-					</span>
-					`,
-					iconSize: [20, 20],
-					iconAnchor: L.point(41, 62),
-					className: 'leafletFontAwesomeIcon'
-				});
-			};
-
+			var fontAwesomeIcon = streetvisions.fontAwesomeIcon (_draggedToolObject);
+			
 			// Check the bounds of a marker (in pixel space), return bool in/out box
 			var checkBounds = function (marker) {
 				
@@ -1324,8 +1308,29 @@ var streetvisions = (function ($) {
 				$('#questionnaire').attr('value', JSON.stringify(questionnaire));
 			});
 		},
-
-
+		
+		
+		// Function to create a font awesome -based icon
+		fontAwesomeIcon: function (toolObject)
+		{
+			// Get icon of specified tool
+			var icon = toolObject.icon;
+			var colour = toolObject.colour;
+			
+			return L.divIcon({
+				html: `
+				<span class="fa-stack fa-2x">
+ 					<i class="fas fa-map-marker fa-stack-2x" style="color: ${colour}"></i>
+ 					<i class="fa ${icon} fa-stack-1x" style="color: white"></i>
+				</span>
+				`,
+				iconSize: [20, 20],
+				iconAnchor: L.point(41, 62),
+				className: 'leafletFontAwesomeIcon'
+			});
+		},
+		
+		
 		// Function to display a modal
 		showModal: function (modalObject, htmlContent = false, onClick = false)
 		{
