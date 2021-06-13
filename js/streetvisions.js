@@ -923,9 +923,6 @@ var streetvisions = (function ($) {
 				}
 			});
 			
-			// Template for the FontAwesome icon to drop onto map
-			var fontAwesomeIcon = streetvisions.fontAwesomeIcon (_draggedToolObject);
-			
 			// Check the bounds of a marker (in pixel space), return bool in/out box
 			var checkBounds = function (marker) {
 				
@@ -953,7 +950,7 @@ var streetvisions = (function ($) {
 				var coordinates = _map.mouseEventToLatLng (e);
 				var id = Date.now().toString();
 				var marker = L.marker (coordinates, {
-					icon: fontAwesomeIcon (),
+					icon: streetvisions.fontAwesomeIcon (_draggedToolObject),
 					draggable: true,
 					uniqueId: id
 				});
