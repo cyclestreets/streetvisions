@@ -745,37 +745,74 @@ var streetvisions = (function ($) {
 			// Return the modified string
 			return string;
 		},
-
-	
+		
+		
+		// Geocoder, with associated UI functions
+		geocoder: function ()
+		{
+			// Geocoder URL; re-use of settings values is supported, represented as placeholders {%cyclestreetsApiBaseUrl}, {%cyclestreetsApiKey}, {%autocompleteBbox}
+			var geocoderApiUrl = streetvisions.settingsPlaceholderSubstitution (_settings.geocoderApiUrl, ['cyclestreetsApiBaseUrl', 'cyclestreetsApiKey', 'autocompleteBbox']);
+			
+			// Attach the autocomplete library behaviour to the location control
+			autocomplete.addTo ('.geocoder input', {
+				sourceUrl: geocoderApiUrl,
+				select: function (event, ui) {
+					var bbox = ui.item.feature.properties.bbox.split(',');	// W,S,E,N
+					_map.flyToBounds ([
+						[bbox[1], bbox[0]],
+						[bbox[3], bbox[2]]
+					],{
+						duration: 2,
+						maxZoom: 14
+					});
+					
+					closeSearchBox ();
+					event.preventDefault();
+				}
+			});
+			
+			var closeSearchBox = function () {
+				$('.geocoder input').animate ({'width': '20px'});
+			};
+			
+			var openSearchBox = function () {
+				$('.geocoder input').animate ({'width': '275px'});
+				//$('#browse-search-box').focus ();
+			};
+			
+			// Enable search box
+			$('#browse-search-box').on('click', function () {
+				$(this).focus();
+			});
+			
+			$('.geocoder-button').on('click', function () {
+				openSearchBox ();
+			});
+			
+			$('.geocoder-button').on('mouseover', function () {
+				openSearchBox ();
+			});
+			
+			$('.geocoder-button').on('mouseleave', function () {
+				setTimeout(function () {
+					if ($('.geocoder input').val() == '') {
+						closeSearchBox ();
+					}
+				}, 1500);
+			});
+			
+			// Auto-open search box
+			setTimeout (function () {
+				openSearchBox ();
+			}, 1000);
+		},
+		
+		
 		// Builder options
 		initBuilder: function ()
 		{
-			// Add geocoder
-			var geocoder = function ()
-			{
-				// Geocoder URL; re-use of settings values is supported, represented as placeholders {%cyclestreetsApiBaseUrl}, {%cyclestreetsApiKey}, {%autocompleteBbox}
-				var geocoderApiUrl = streetvisions.settingsPlaceholderSubstitution (_settings.geocoderApiUrl, ['cyclestreetsApiBaseUrl', 'cyclestreetsApiKey', 'autocompleteBbox']);
-				
-				// Attach the autocomplete library behaviour to the location control
-				autocomplete.addTo ('.geocoder input', {
-					sourceUrl: geocoderApiUrl,
-					select: function (event, ui) {
-						var bbox = ui.item.feature.properties.bbox.split(',');	// W,S,E,N
-						_map.flyToBounds([
-							[bbox[1], bbox[0]],
-							[bbox[3], bbox[2]]
-						],{
-							duration: 2,
-							maxZoom: 14
-						});						
-						
-						closeSearchBox();
-
-						event.preventDefault();
-					}
-				});
-			};
-			geocoder ();
+			// Add geocoder (with associated UI functions)
+			streetvisions.geocoder ();
 
 			// Enable drag to hide panel on mobile
 			$('.pull-handle, .expand-handle').on('click', function () {
@@ -783,39 +820,6 @@ var streetvisions = (function ($) {
 				$('.expand-handle').toggle();
 				$('.map-header h1').toggle();
 			});
-
-			// Enable search box
-			$('#browse-search-box').on('click', function () {
-				$(this).focus();
-			});
-
-			$('.geocoder-button').on('click', function () {
-				openSearchBox();
-			});
-
-			$('.geocoder-button').on('mouseover', function () {
-				openSearchBox();
-			});
-
-			$('.geocoder-button').on('mouseleave', function () {
-				setTimeout(function () {
-					if ($('.geocoder input').val() == '') {
-						closeSearchBox();
-					}
-				}, 1500);
-			});
-			
-			var closeSearchBox = function () {
-				$('.geocoder input').animate({'width': '20px'});
-			};
-			
-			var openSearchBox = function () {
-				$('.geocoder input').animate({'width': '275px'});
-				//$('#browse-search-box').focus();
-			};
-			setTimeout(function () {
-				openSearchBox();
-			}, 1000);
 			
 			// Set grabbing cursor as soon as the object has been clicked on
 			$('.toolbox .group-contents ul li').mousedown (function (e) {
