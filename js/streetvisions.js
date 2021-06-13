@@ -272,6 +272,11 @@ var streetvisions = (function ($) {
 				}
 			});
 			
+			// Populate pretty names, adding these to the definitions
+			$.each (_toolboxObjects, function (index, tool) {
+				_toolboxObjects[index].prettyName = streetvisions.convertCamelCaseToSentence (tool.type);
+			});
+			
 			// Run action, if defined and existing
 			if (action) {
 				if (typeof streetvisions[action] === 'function') {
@@ -470,11 +475,6 @@ var streetvisions = (function ($) {
 		{
 			// Init modal
 			streetvisions.initModal ();
-			
-			// Populate pretty names, adding these to the definitions
-			$.each (_toolboxObjects, function (index, tool) {
-				_toolboxObjects[index].prettyName = streetvisions.convertCamelCaseToSentence (tool.type);
-			});
 			
 			// Add toolbox objects from defintion
 			streetvisions.populateToolbox ();
