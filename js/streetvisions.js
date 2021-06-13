@@ -1321,8 +1321,8 @@ var streetvisions = (function ($) {
  					<i class="fa ${icon} fa-stack-1x" style="color: white"></i>
 				</span>
 				`,
-				iconSize: [20, 20],
-				iconAnchor: L.point(41, 62),
+				iconSize: [41, 62],
+				iconAnchor: L.point(41, 12),
 				className: 'leafletFontAwesomeIcon'
 			});
 		},
