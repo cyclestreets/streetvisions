@@ -508,10 +508,40 @@ var streetvisions = (function ($) {
 			// Add a layer group to manage dropped tools
 			L.layerGroup().addTo (_map);
 			
+			// Create a lookup of toolbar types to icons
+			var toolIcons = {};
+			var toolColours = {};
+			var toolPrettyNames = {};
+			$.each (_toolboxObjects, function (index, tool) {
+				toolIcons[tool.type] = tool.icon;
+				toolColours[tool.type] = tool.colour;
+				toolPrettyNames[tool.type] = tool.prettyName;
+			});
+			
 			// Add the GeoJSON to the map
 			if (geojsonData && Object.entries(geojsonData).length) {
-				var feature = L.geoJSON (geojsonData).addTo (_map);
-				_map.fitBounds (feature.getBounds());
+				var features = L.geoJSON (geojsonData, {
+					
+					// Set the correct icon
+					pointToLayer: function (feature, latlng) {
+						var type = feature.properties.type;
+						var icon = streetvisions.fontAwesomeIcon ({icon: toolIcons[type], colour: toolColours[type]});
+						return L.marker (latlng, {icon: icon});
+					},
+					
+					// Add the metadata to each popup
+					onEachFeature: function (feature, layer) {
+						if (!disableInteractivity) {	// If an interactive map
+							if (feature.properties) {
+								var popupHtml = '<h3>' + streetvisions.htmlentities (toolPrettyNames[feature.properties.type]) + '</h3>';
+								popupHtml += '<p>' + streetvisions.htmlentities (feature.properties.description) + '</p>';
+								layer.bindPopup (popupHtml);
+							}
+						}
+					}
+				});
+				features.addTo (_map);
+				_map.fitBounds (features.getBounds());
 			}
 			
 			// Disable interactivity if required
