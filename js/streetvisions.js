@@ -526,6 +526,7 @@ var streetvisions = (function ($) {
 			
 			// Disable interactivity if required
 			if (disableInteractivity) {
+				_map.removeControl (_map.zoomControl);
 				_map._handlers.forEach (function (handler) {
 					handler.disable ();
 				});
