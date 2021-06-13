@@ -908,19 +908,21 @@ var streetvisions = (function ($) {
 				});
 			};
 
-			// Check the bounds of a marker, return bool in/out box
+			// Check the bounds of a marker (in pixel space), return bool in/out box
 			var checkBounds = function (marker) {
 				
-				// Get the map bounds
-				var bounds = _map.getBounds ();
-    			var paddedBounds = new L.LatLngBounds (
-					new L.LatLng ((bounds.getNorth () - 0.001), (bounds.getEast () - 0.001)),
-					new L.LatLng ((bounds.getSouth () + 0.001), (bounds.getWest () + 0.001))
-				);
+				// Get the x,y locations of the marker and the map
+				var point = _map.latLngToContainerPoint (marker.getLatLng ());
+				var size = _map.getSize ();
 				
-				// Check against the bounds
-				var markerPosition = marker.getLatLng ();
-				return paddedBounds.contains (new L.LatLng (markerPosition.lat, markerPosition.lng));
+				// Check against padded bounds
+				var padding = 15;
+				return (
+					(point.x >= (0 + padding)) &&
+					(point.x <= (size.x - padding)) &&
+					(point.y >= (0 + padding + 40)) &&		/* Extra amount to take into account icon height as drag upwards /*
+					(point.y <= (size.y - padding))
+				);
 			};
 			
 			// On drop on map, create an icon
