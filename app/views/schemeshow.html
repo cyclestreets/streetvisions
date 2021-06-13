@@ -48,7 +48,8 @@
 
 		<section class="content">
 			<h1>Visions</h1>
-
+			
+			{if $visions|count > 2}
 			<div class="segmented-control-container">
 				<div class="ios-segmented-control">
 					<span class="selection"></span>
@@ -66,6 +67,7 @@
 					</div>
 				</div>
 			</div>
+			{/if}
 
 			<a class="add-vision button button-general" href="{$baseUrl}/{$scheme.moniker}/addvision.html"> <i class="fa fa-plus-circle"></i> Add your vision</a>
 
