@@ -256,7 +256,7 @@ section.builder section.toolbox h3 {cursor: pointer; font-size: 0.9em;}
 section.builder section.toolbox>p {padding-right: 25px;}
 section.builder section.toolbox .padded-content {padding: 0 25px 25px 20px;}
 section.builder section.toolbox .padded-content h3 {margin: 0;}
-section.builder section.toolbox .toolbox-header>i {transition: .5s;}
+section.builder section.toolbox .toolbox-header>i {transition: .5s; cursor: pointer;}
 section.builder section.toolbox .toolbox-header>i.rotated {transform: rotate(-90deg);}
 section.builder section.toolbox .toolbox-header h3 {display: inline-block; margin: 10px 7.5px; padding: 5px; border-radius: 10px;}
 section.builder section.toolbox .toolbox-header h3:hover {background-color: #eee;}
