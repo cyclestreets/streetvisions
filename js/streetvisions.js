@@ -278,6 +278,19 @@ var streetvisions = (function ($) {
 					streetvisions[action] ();
 				}
 			}
+			
+			// Replace title attribute with better tooltips
+			streetvisions.enableTooltips ();
+		},
+		
+		
+		// Tooltips
+		enableTooltips: function ()
+		{
+			// Enable tooltips for links with a title, if loaded
+			if (typeof Tipped != 'undefined') {
+				Tipped.create ('a[title]');
+			}
 		},
 		
 		

@@ -6,6 +6,10 @@
 	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A==" crossorigin=""/>
 	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js" integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA==" crossorigin=""></script>
 	
+	<!-- Tooltips -->
+	<script type="text/javascript" src="{$applicationPath}/js/lib/tipped/dist/js/tipped.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="{$applicationPath}/js/lib/tipped/dist/css/tipped.css"/>
+	
 	<link rel="stylesheet" type="text/css" href="{$applicationPath}/css/streetvisions.css" />
 	<script src="{$applicationPath}/js/streetvisions.js"></script>
 	<script>
@@ -21,7 +25,7 @@
 				<i class="expand-handle fa fa-chevron-down"></i>
 				
 				<div class="header-content">
-					<a href="{$baseUrl}/{$scheme.moniker|htmlspecialchars}/"> <i class="back-arrow fa fa-chevron-circle-left"></i></a><h1>{$vision.name|htmlspecialchars}</h1>
+					<a href="{$baseUrl}/{$scheme.moniker|htmlspecialchars}/" title="Back to list of visions for this scheme"> <i class="back-arrow fa fa-chevron-circle-left"></i></a><h1>{$vision.name|htmlspecialchars}</h1>
 					<div class="likes">
 						<i class="fa fa-heart"></i><p>{$vision.likes}</p>
 					</div>
