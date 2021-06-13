@@ -795,6 +795,17 @@ var streetvisions = (function ($) {
 				$(this).focus();
 			});
 			
+			// Avoid double-click / drag in geocoder moving the map; see: https://gis.stackexchange.com/a/104609/58752
+			$('.geocoder').on ('mouseover', function (e) {
+				_map.dragging.disable ();
+			});
+			$('.geocoder').on ('mouseout', function (e) {
+				_map.dragging.enable ();
+			});
+			$('.geocoder').on ('dblclick', function (e) {
+				e.stopPropagation ();
+			});
+			
 			$('.geocoder-button').on('click', function () {
 				openSearchBox ();
 			});
