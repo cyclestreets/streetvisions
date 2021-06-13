@@ -707,7 +707,7 @@ var streetvisions = (function ($) {
 			});
 
 			// Enable toolbox headers to be clickable
-			$('.toolbox-header > h3, .toolbox-header > h5').on ('click', function (event) {
+			$('.toolbox-header > h3').on ('click', function (event) {
 				toggleToolbox (event);
 			});
 
@@ -1411,12 +1411,12 @@ var streetvisions = (function ($) {
 			});
 
 			// Enable discussion headers to be clickable
-			$('.discussion-header>h5').on ('click', function (event) {
+			$('.discussion-header > h3').on ('click', function (event) {
 				toggleDiscussion (event);
 			});
 
 			// Enable discussion chevrons to be clickable
-			$('.discussion-header>i').on ('click', function (event) {
+			$('.discussion-header > i').on ('click', function (event) {
 				toggleDiscussion (event);
 			});
 
