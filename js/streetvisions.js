@@ -654,7 +654,7 @@ var streetvisions = (function ($) {
 			});
 
 			// Enable toolbox headers to be clickable
-			$('.toolbox-header > h5').on ('click', function (event) {
+			$('.toolbox-header > h3, .toolbox-header > h5').on ('click', function (event) {
 				toggleToolbox (event);
 			});
 
