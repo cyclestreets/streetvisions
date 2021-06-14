@@ -1333,9 +1333,7 @@ var streetvisions = (function ($) {
 			$('.vision-description').on('focus', function () {
 				// Only do this if we are in statu virginem
 				if ($('.vision-description').first().hasClass('untitled')) {
-					$('.vision-description').animate({'min-height': '60px'}, function () {
-						$('.vision-description').focus();
-					})
+					$('.vision-description').animate({'min-height': '60px'});
 				}
 			});
 
