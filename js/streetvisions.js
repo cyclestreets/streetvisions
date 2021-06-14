@@ -1582,9 +1582,9 @@ var streetvisions = (function ($) {
 			};
 			
 			// End if not present
+			var geojsonLayer;
 			$('#contextualdata input').change (function (e) {
 				
-				var geojsonLayer;
 				if (this.checked) {
 					
 					// Determine the data URL
