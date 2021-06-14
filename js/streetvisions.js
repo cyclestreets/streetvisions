@@ -1316,7 +1316,12 @@ var streetvisions = (function ($) {
 			
 			// Put focus in first box when an accordion panel is opened
 			$('#accordion').on ('accordionactivate', function (event, ui) {
-				$(ui.newPanel).find ('input')[0].focus ();
+				if (!$.isEmptyObject (ui.newPanel)) {
+					var inputs = $(ui.newPanel).find ('input');
+					if (inputs[0]) {
+						inputs[0].focus ();
+					}
+				}
 			});
 			
 			// When clicking on the title bar, make it editable
