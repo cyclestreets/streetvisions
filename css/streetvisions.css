@@ -115,6 +115,7 @@ section.vision section.map .map-header hr {margin: 20px 0;}
 section.vision section.map .map-header h2 {color: #f2bd54; padding-left: 50px; margin: 0 0 2.5px 0; font-size: 30px;}
 section.vision section.map .map-header h3 {color: white; padding-left: 50px; margin: 0 0 12.5px 0;}
 section.vision section.map .map-header h4 {color: white; padding-left: 50px; max-width: 50%; font-size: 15px; margin: 0 0 15px; padding-bottom: 15px;}
+section.vision section.map a.edit {float: right; margin-right: 20px; cursor: pointer;}
 section.vision section.map p.description {margin: 10px 0 10px 50px;}
 section.vision section.map .expand-handle {display: none; position: absolute; width: 100%; top: 40px; text-align: center; color: white;}
 section.vision section.map .pull-handle {color: white; display: none; margin: 15px auto 0; padding-top: 7.5px; text-align: center; border-top: 0.5px solid grey}
