@@ -654,12 +654,13 @@ var streetvisions = (function ($) {
 					// Add this tool to the existing header
 					var toolboxGroupUl = $('.toolbox .' + group + ' ul');
 					var style = (tool.hasOwnProperty('colour') ? tool.colour : getColourCSS (i, _toolboxObjects.length))
+					var price = Number (tool.price).toLocaleString ();
 					$(toolboxGroupUl).append (
 						`<li data-tool="${tool.type}" class="tool tool-${tool.type}" style="background-color: ${style}; color: white;">
 							<i class="info-icon info-${tool.type} fa fa-info-circle"></i>
 							<i class="fa ${tool.icon}"></i>
 							<p>${tool.prettyName}</p>
-							<p class="price">${_budgetCurrency}${tool.price}</p>
+							<p class="price">${_budgetCurrency}${price}</p>
 						</li>`
 					);
 				});
@@ -844,7 +845,7 @@ var streetvisions = (function ($) {
 					var flooredNumber = Math.floor(now);
 					var target = $(tween.elem);
 
-					flooredNumber = _budgetCurrency + flooredNumber
+					flooredNumber = _budgetCurrency + flooredNumber.toLocaleString ();
 
 					// Set text
 					target.text(flooredNumber);
@@ -852,9 +853,10 @@ var streetvisions = (function ($) {
 			});
 
 			// Set the property of number, so the animation begins from this number next time, as opposed to 0
-			element.prop('number', _currentBudget);
+			element.prop ('number', _currentBudget);
 		},
-
+		
+		
 		// Throttle function: Input as function which needs to be throttled and delay is the time interval in milliseconds
 		throttleFunction: function (func, delay) {
 			// If setTimeout is already scheduled, no need to do anything
