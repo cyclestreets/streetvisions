@@ -38,6 +38,12 @@ var streetvisions = (function ($) {
 	var _map; // Class property Leaflet map
 	var _leafletMarkers = []; // User-added map markers
 	
+	// Properties - budgetting feature
+	var _startingBudget = 300000; // Original budget
+	var _currentBudget = 0; // Remaining budget
+	var throttleInProgress = 0; // For throttling budget update
+	var _budgetCurrency = '£'; // Budget currency
+	
 	var _builderInputs = {
 		title: [
 			{
@@ -74,7 +80,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'cycling',
 			icon: 'fa-parking',
-			colour: '#069BED'
+			colour: '#069BED',
+			price: '10000'
 		},
 		{
 			type: 'cycleLane', 
@@ -84,7 +91,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'cycling',
 			icon: 'fa-road',
-			colour: '#433C96'
+			colour: '#433C96',
+			price: '75000'
 		},
 		{
 			type: 'pointClosure', 
@@ -94,7 +102,8 @@ var streetvisions = (function ($) {
 			],
 			groups: ['walking', 'cycling', 'driving'],
 			icon: 'fa-hand-paper',
-			colour: '#D52506'
+			colour: '#D52506',
+			price: '50000'
 		},
 		{
 			type: 'carParking', 
@@ -104,7 +113,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'driving',
 			icon: 'fa-parking',
-			colour: '#3D6B94'
+			colour: '#3D6B94',
+			price: '35000'
 		},
 		{
 			type: 'disabledParking',
@@ -112,7 +122,8 @@ var streetvisions = (function ($) {
 			images: ['http://www.airport-parking-shop.co.uk/blog/wp-content/uploads/2014/06/DisabledCarParking.jpg'],
 			groups: 'driving',
 			icon: 'fa-parking',
-			colour: '#2563C5'
+			colour: '#2563C5',
+			price: '5000'
 		},
 		{
 			type: 'slowerSpeeds',
@@ -121,7 +132,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'driving',
 			icon: 'fa-car',
-			colour: 'gray'
+			colour: 'gray',
+			price: '5000'
 		},
 		{
 			type: 'deliveryBay', 
@@ -131,7 +143,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'driving',
 			icon: 'fa-truck',
-			colour: '#42268C'
+			colour: '#42268C',
+			price: '15000'
 		},
 		{
 			type: 'chargingPoint', 
@@ -141,7 +154,8 @@ var streetvisions = (function ($) {
 			],
 			groups: ['driving'],
 			icon: 'fa-plug',
-			colour: '#A745A5'
+			colour: '#A745A5',
+			price: '20000'
 		},
 		{
 			type: 'trafficCalming', 
@@ -152,7 +166,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'driving',
 			icon: 'fa-traffic-light',
-			colour: '#B13110'
+			colour: '#B13110',
+			price: '25000'
 		},
 		{
 			type: 'plantingArea', 
@@ -163,7 +178,8 @@ var streetvisions = (function ($) {
 			],
 			groups: ['publicSpace'],
 			icon: 'fa-seedling',
-			colour: '#83AD1F'
+			colour: '#83AD1F',
+			price: '8000'
 		},
 		{
 			type: 'tree',
@@ -173,7 +189,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'publicSpace',
 			icon: 'fa-tree',
-			colour: '#82CA13'
+			colour: '#82CA13',
+			price: '3000'
 		},
 		{
 			type: 'crossing',
@@ -183,7 +200,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'walking',
 			icon: 'fa-traffic-light',
-			colour: '#1650A7'
+			colour: '#1650A7',
+			price: '15000'
 		},
 		{
 			type: 'pavementImprovement', 
@@ -194,7 +212,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'walking',
 			icon: 'fa-walking',
-			colour: '#1AA8D0'
+			colour: '#1AA8D0',
+			price: '27500'
 		},
 		{
 			type: 'parklet', 
@@ -204,7 +223,8 @@ var streetvisions = (function ($) {
 			],
 			groups: 'walking',
 			icon: 'fa-cubes',
-			colour: '#27824C'
+			colour: '#27824C',
+			price: '20000'
 		},
 		{
 			type: 'seating',
@@ -215,7 +235,8 @@ var streetvisions = (function ($) {
 			],
 			groups: ['walking', 'publicSpace'],
 			icon: 'fa-chair',
-			colour: '#1A8D8A'
+			colour: '#1A8D8A',
+			price: '8000'
 		},
 		{
 			type: 'playArea', 
@@ -223,7 +244,8 @@ var streetvisions = (function ($) {
 			images: ['https://www.poole.gov.uk/_resources/assets/inline/full/0/45828.jpg'],
 			groups: 'publicSpace',
 			icon: 'fa-snowman',
-			colour: '#1CBF22'
+			colour: '#1CBF22',
+			price: '32000'
 		},
 		{
 			type:'cafeSpace', 
@@ -231,7 +253,8 @@ var streetvisions = (function ($) {
 			images: ['https://i.pinimg.com/originals/f4/64/25/f46425e17f75b496002807d482b6c4b1.jpg'],
 			groups: 'publicSpace',
 			icon: 'fa-coffee',
-			colour: '#0B986B'
+			colour: '#0B986B',
+			price: '22000'
 		},
 		{
 			type: 'parkingRestriction', 
@@ -239,7 +262,8 @@ var streetvisions = (function ($) {
 			images: ['http://thumbs.dreamstime.com/t/parking-restriction-sign-rectangular-yellow-no-waiting-monday-to-saturday-41370190.jpg'],
 			groups: 'driving',
 			icon: 'fa-parking',
-			colour: '#DB9020'
+			colour: '#DB9020',
+			price: '8000'
 		},
 		{
 			type: 'bollard', 
@@ -247,7 +271,8 @@ var streetvisions = (function ($) {
 			images: ['http://www.bollardsolutions.com/wp-content/uploads/2016/08/Automatic-Bollard-BMW-Entrance.png'],
 			groups: 'driving',
 			icon: 'fa-car-crash',
-			colour: '#B13110'
+			colour: '#B13110',
+			price: '12000'
 		}
 	];
 	var _toolboxGroupEmoji = {
@@ -634,6 +659,7 @@ var streetvisions = (function ($) {
 							<i class="info-icon info-${tool.type} fa fa-info-circle"></i>
 							<i class="fa ${tool.icon}"></i>
 							<p>${tool.prettyName}</p>
+							<p class="price">${_budgetCurrency}${tool.price}</p>
 						</li>`
 					);
 				});
@@ -757,25 +783,6 @@ var streetvisions = (function ($) {
 				$('.toolbox-card').slideUp ();
 			}
 
-			// Open help card
-			function openHelpCard () {
-				$('.toolbox-card').slideDown ();
-			}
-			
-			// Populate help card
-			function populateHelpCard (type) {
-				var object = _toolboxObjects.find ((o) => o.type === type);
-
-				if (object == 'undefined') {
-					return false;
-				}
-				
-				// Populate card
-				$('.toolbox-card i.icon').removeClass().addClass('icon fa').addClass(object.icon);
-				$('.toolbox-card h1').text(streetvisions.convertCamelCaseToSentence(object.type));
-				$('.toolbox-card p').text(object.description);
-			}
-
 			// When clicking a tool, populate the help box
 			$('.toolbox .group-contents ul li').on ('click', function () {
 				
@@ -800,6 +807,72 @@ var streetvisions = (function ($) {
 		},
 		
 		
+		throttle: function (fn, delay) {
+			return (...args) => {
+			  let now = new Date().getTime();
+			  if(now - _lastBudgetUpdate < delay) {
+				return;
+			  }
+			  console.log('running')
+			  _lastBudgetUpdate = now;
+			  return fn(...args);
+			}
+		},
+		
+		
+		// Update budget
+		updateBudget: function() {
+			
+			// Update screen to match the current budget
+			$('.budget-remaining').text(`${_budgetCurrency}${_currentBudget}`).data('currentBudget', _currentBudget);
+
+			// Calculate the colour (<20% red, <50% orange, green )
+			var colour = '#83AD1F';
+			if (_currentBudget < (_startingBudget * .2)) {
+				colour = '#D52506';
+			} else if (_currentBudget < (_startingBudget * .5)) {
+				colour = '#F2BD54';
+			}
+
+			// Animate the number
+			var element = $('.budget-remaining').first ();
+			element.animateNumber ({
+				number: _currentBudget,
+				color: colour,
+
+				numberStep: function(now, tween) {
+					var flooredNumber = Math.floor(now);
+					var target = $(tween.elem);
+
+					flooredNumber = _budgetCurrency + flooredNumber
+
+					// Set text
+					target.text(flooredNumber);
+				}
+			});
+
+			// Set the property of number, so the animation begins from this number next time, as opposed to 0
+			element.prop('number', _currentBudget);
+		},
+
+		// Throttle function: Input as function which needs to be throttled and delay is the time interval in milliseconds
+		throttleFunction: function (func, delay) {
+			// If setTimeout is already scheduled, no need to do anything
+			if (throttleInProgress) {
+				return
+			}
+
+			// Schedule a setTimeout after delay seconds
+			throttleInProgress = setTimeout(function () {
+				func()
+
+				// Once setTimeout function execution is finished, timerId = undefined so that in <br>
+				// the next scroll event function execution can be scheduled by the setTimeout
+				throttleInProgress = undefined;
+			}, delay)
+		},
+
+
 		// Geocoder, with associated UI functions
 		geocoder: function ()
 		{
@@ -894,6 +967,10 @@ var streetvisions = (function ($) {
 			$('.leafletInstructions').click (function () {
 				$('.leafletInstructions').addClass ('hidden');
 			});
+
+			// At startup load the starting budget
+			_currentBudget = _startingBudget;
+			streetvisions.updateBudget();
 			
 			// Allow objects to be draggable onto the map
 			$('.toolbox .group-contents ul li').draggable ({
@@ -935,6 +1012,10 @@ var streetvisions = (function ($) {
 					
 					// Reset the cursor
 					$(this).css ('cursor', 'pointer');
+
+					// Deduct the price of the dropped element from the budget
+					_currentBudget -= _draggedToolObject.price;
+					streetvisions.updateBudget();
 				}
 			});
 
@@ -986,13 +1067,17 @@ var streetvisions = (function ($) {
 				});
 				
 				// Handler for Marker deletion
-				marker.deleteMarker = function () {
+				marker.deleteMarker = function (marker) {
 					_map.removeLayer (marker);
 				}
+
+				// Save the price of this element
+				marker._price = _draggedToolObject.price;
 				
 				// Handler for Marker move
 				marker.streetVisionsId = id;
 				marker.on ('move', function (event) {
+					
 					// Once we start moving a marker, hide all popups
 					Tipped.hideAll();
 
@@ -1011,10 +1096,16 @@ var streetvisions = (function ($) {
 							$('.deleteTarget').hide();
 							
 							// Display poof animation
-							poofEvent (offset.left, offset.top)
+							poofEvent (offset.left, offset.top);
+
+							const budgetUpdate = function () {
+								_currentBudget = _currentBudget + Number(marker._price);
+								streetvisions.updateBudget ();
+							};
+							streetvisions.throttleFunction(budgetUpdate, 0);
 							
 							// Delete the marker from Leaflet
-							marker.deleteMarker();
+							marker.deleteMarker (marker);
 						});
 					}
 					
@@ -1062,13 +1153,25 @@ var streetvisions = (function ($) {
 
 			// Handler for marker deletion
 			$(document).on('click', '.button.delete-button', function (event) {
+
+				// Iterate through the layers until we find a match
 				var id = $(this).data('id');
 				_map.eachLayer((layer) => {
 					if (layer.hasOwnProperty('streetVisionsId') && layer.streetVisionsId == id) {
+
+						// Hide any tooltip
 						Tipped.hide('.' + id);
+
+						// Display a poof event
 						var offset = getOffset(layer._icon);
 						poofEvent (offset.left, offset.top)
+
+						// Remove layer
 						layer.remove();
+
+						// Top up the budget
+						_currentBudget = _currentBudget + Number(layer._price);
+						streetvisions.updateBudget ();
 					}
 				});
 			});
