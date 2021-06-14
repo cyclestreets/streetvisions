@@ -1299,8 +1299,8 @@ var streetvisions = (function ($) {
 
 			// Enable vision info accordion
 			var icons = {
-				header: "fa fa-chevron-right",
-				activeHeader: "fa fa-chevron-down"
+				header: 'fa fa-chevron-right',
+				activeHeader: 'fa fa-chevron-down'
 			  };
 			$('#accordion').accordion({
 				active: false,
@@ -1311,8 +1311,7 @@ var streetvisions = (function ($) {
 
 			// After initialising accordion, animate activating the first tab
 			setTimeout(() => {
-				$('#accordion').accordion('option', 'active', 0);	
-				$('#accordion').accordion('option', 'collapsible', false);	
+				$('#accordion').accordion('option', 'active', 0);
 			}, 500);
 			
 			// Put focus in first box when an accordion panel is opened
