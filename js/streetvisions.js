@@ -1580,7 +1580,9 @@ var streetvisions = (function ($) {
 			// Define the layers and their API calls
 			var layers = {
 				cycleparking: _settings.cyclestreetsApiBaseUrl + '/v2/pois.locations?type=cycleparking&fields=id,name,osmTags[capacity,access,bicycle_parking,covered],nodeId',
+				dublinbikelanes: '/libraries/streetvisions/images/dublinbikelanes.geojson',
 				speedlimits: '/libraries/streetvisions/images/speedlimits.geojson',
+				modalfilters: _settings.cyclestreetsApiBaseUrl + '/v2/advocacydata.modalfilters',
 			};
 			
 			// End if not present
@@ -1609,7 +1611,7 @@ var streetvisions = (function ($) {
 								pointToLayer: function (feature, latlng) {
 									var markerProperties = {
 										icon: L.icon ({
-											iconUrl: feature.properties.iconUrl,
+											iconUrl: feature.properties.iconUrl || 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
 											iconSize: 20
 										})
 									};
