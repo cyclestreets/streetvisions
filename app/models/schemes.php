@@ -57,7 +57,7 @@ class schemesModel
 	public function getSchemes ()
 	{
 		# Get the schemes from the database
-		if (!$schemesById = $this->databaseConnection->select ($this->settings['database'], 'schemes', array (), '*, ST_AsGeoJSON(boundary) AS boundary')) {return array ();}
+		if (!$schemesById = $this->databaseConnection->select ($this->settings['database'], 'schemes', array (), '*, ST_AsGeoJSON(boundary) AS boundary', false, 'id DESC')) {return array ();}
 		
 		# Reindex by moniker
 		$schemes = array ();
