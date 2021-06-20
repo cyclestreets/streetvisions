@@ -131,6 +131,7 @@ class schemesModel
 		$url = "https://api.postcodes.io/postcodes?lon={$centre['lon']}&lat={$centre['lat']}";
 		$response = file_get_contents ($url);
 		$geocode = json_decode ($response, true);
+		if (!$result) {return '?';}
 		$postcodeArea = $geocode['result'][0]['outcode'];
 		
 		# Return the result
